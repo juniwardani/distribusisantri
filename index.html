@@ -1,4 +1,5 @@
-<html><head>
+<html>
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pembimbing Baru Santri Rumah Tahfidz Saijaan</title>
@@ -22,37 +23,27 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    padding: 2rem;
+    justify-content: flex-start; /* Ubah menjadi flex-start agar bisa menyesuaikan */
+    padding: 0; /* Menghilangkan padding untuk responsif */
+    width: 100%; /* Pastikan lebar 100% */
   }
   h1 {
-    margin-bottom: 2rem;
+    margin-bottom: 1rem; /* Mengurangi margin untuk tampilan lebih baik di mobile */
   }
   #distribution-container {
     width: 100%;
-    height: 70vh;
+    height: 70vh; /* Menggunakan 70% dari tinggi viewport */
     border: none;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  #zoom-controls {
-    margin-top: 1rem;
-    display: flex;
-    gap: 1rem;
-  }
-  button {
-    background-color: #800000;
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  button:hover {
-    background-color: #600000;
+    overflow: hidden; /* Menyembunyikan overflow */
+    transform-origin: top left; /* Menjaga asal transform ketika load */
   }
   @media (max-width: 768px) {
     h1 {
       font-size: 1.5rem;
+    }
+    #distribution-container {
+      height: 50vh; /* Menyesuaikan tinggi untuk perangkat mobile */
     }
   }
 </style>
@@ -64,46 +55,11 @@
 
   <main>
     <iframe id="distribution-container" src="distribusi.html"></iframe>
-    <div id="zoom-controls">
-      <button id="zoom-in">Zoom In</button>
-      <button id="zoom-out">Zoom Out</button>
-    </div>
   </main>
 
   <footer>
     <p>&copy; 2023 Rumah Tahfidz Saijaan. All rights reserved.</p>
   </footer>
 
-  <script>
-    const iframe = document.getElementById('distribution-container');
-    const zoomInBtn = document.getElementById('zoom-in');
-    const zoomOutBtn = document.getElementById('zoom-out');
-    let scale = 1;
-
-    function setZoom(newScale) {
-      scale = newScale;
-      iframe.style.transform = `scale(${scale})`;
-    }
-
-    zoomInBtn.addEventListener('click', () => {
-      setZoom(scale + 0.1);
-    });
-
-    zoomOutBtn.addEventListener('click', () => {
-      setZoom(Math.max(0.5, scale - 0.1));
-    });
-
-    // Handle zooming with mouse wheel
-    iframe.addEventListener('wheel', (e) => {
-      e.preventDefault();
-      const delta = e.deltaY > 0 ? -0.1 : 0.1;
-      setZoom(Math.max(0.5, Math.min(2, scale + delta)));
-    });
-
-    // Ensure the iframe content is loaded before applying zoom
-    iframe.onload = () => {
-      iframe.style.transformOrigin = 'center center';
-    };
-  </script>
 </body>
 </html>
