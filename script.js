@@ -1598,8 +1598,11 @@ const data = [
 function loadContent() {
     // Mengubah data menjadi HTML
     const content = data.map(item => {
+        // Cek jika item adalah "ANDI RIZKI DAFA RAMADHAN" untuk menambahkan kelas khusus
+        const rowClass = item.NAMA === "NAMA" ? "special-row" : "";
+        
         return `
-            <tr>
+            <tr class="${rowClass}">
                 <td>${item.NAMA.trim()}</td>
                 <td>${item["PEMBIMBING AWAL"].trim()}</td>
                 <td>${item["PEMBIMBING BARU"].trim()}</td>
