@@ -70,21 +70,14 @@
             white-space: normal; /* Mencegah teks melompat ke baris berikutnya */
         }
 
+        .special-row {
+            background-color: maroon;
+            color: white;
+        }
+
         th {
             background-color: var(--maroon); /* Warna latar belakang maroon untuk header */
             color: white; /* Warna teks putih untuk header */
-            position: sticky; /* Menetapkan posisi header agar tetap */
-            top: 0; /* Menentukan posisi tetap di bagian atas */
-            z-index: 10; /* Memastikan header berada di atas konten tabel */
-        }
-
-        /* Menambahkan warna merah maroon untuk teks header */
-        .header-row {
-            color: var(--maroon); /* Warna teks maroon untuk baris header */
-            text-align: center; /* Rata tengah */
-            font-weight: bold; /* Menguatkan teks */
-            font-size: 18px; /* Ukuran font untuk baris header */
-            margin-bottom: 1rem; /* Jarak bawah */
         }
 
         @media (max-width: 600px) {
@@ -107,10 +100,6 @@
             th, td {
                 padding: 0.25rem; /* Padding yang lebih kecil */
             }
-
-            .header-row {
-                font-size: 14px; /* Ukuran font lebih kecil pada layar kecil */
-            }
         }
 
         footer {
@@ -130,21 +119,15 @@
     <main>
         <div class="content">
             <h2>DAFTAR PEMBIMBING BARU SANTRI</h2>
-            
-            <!-- Baris header tambahan untuk NAMA, PEMBIMBING AWAL, PEMBIMBING BARU, STATUS -->
-            <div class="header-row">
-                NAMA &nbsp; | &nbsp; PEMBIMBING AWAL &nbsp; | &nbsp; PEMBIMBING BARU &nbsp; | &nbsp; STATUS
-            </div>
-
             <div id="distribusiContent">
                 <!-- Konten dari script.js akan dimuat di sini -->
                 <table>
                     <thead>
                         <tr>
-                            <th>NAMA</th>
-                            <th>PEMBIMBING AWAL</th>
-                            <th>PEMBIMBING BARU</th>
-                            <th>STATUS</th>
+                            <th class="maroon-text">NAMA</th>
+                            <th class="maroon-text">PEMBIMBING AWAL</th>
+                            <th class="maroon-text">PEMBIMBING BARU</th>
+                            <th class="maroon-text">STATUS</th>
                         </tr>
                     </thead>
                     <tbody>
