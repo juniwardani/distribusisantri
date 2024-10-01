@@ -11,8 +11,8 @@ const data = [
     {
         "NAMA": "ANDI RIZKI DAFA RAMADHAN",
         "PEMBIMBING AWAL": "JUNI WARDANI",
-        "PEMBIMBING BARU": "USTADZ SYARIF",
-        "STATUS": "JILID QURAN"
+        "PEMBIMBING BARU": "USTADZ BAHAUDIN",
+        "STATUS": "JILID VI"
     },
     {
         "NAMA": "SYAQILA SALSABILA SETIAWAN",
@@ -185,7 +185,7 @@ const data = [
     {
         "NAMA": "GERRAD NAUVALAZKA",
         "PEMBIMBING AWAL": "JUNI WARDANI",
-        "PEMBIMBING BARU": "USTADZAH SANAH",
+        "PEMBIMBING BARU": "USTADZAH BAHAUDIN",
         "STATUS": "JILID VI"
     },
     {
@@ -221,7 +221,7 @@ const data = [
     {
         "NAMA": "JAUDAH.",
         "PEMBIMBING AWAL": "USTADZ BAHAUDIN",
-        "PEMBIMBING BARU": "USTADZ THOHIR",
+        "PEMBIMBING BARU": "USTADZ BAHAUDIN",
         "STATUS": "JILID VI"
     },
     {
@@ -251,7 +251,7 @@ const data = [
     {
         "NAMA": "INDRA MAULANA",
         "PEMBIMBING AWAL": "USTADZ BAHAUDIN",
-        "PEMBIMBING BARU": "USTADZAH NISA",
+        "PEMBIMBING BARU": "USTADZ BAHAUDIN",
         "STATUS": "JILID VI"
     },
     {
@@ -389,7 +389,7 @@ const data = [
     {
         "NAMA": "ZIKRA AMALIA",
         "PEMBIMBING AWAL": "USTADZ SYARIF",
-        "PEMBIMBING BARU": "USTADZ THOHIR",
+        "PEMBIMBING BARU": "USTADZ BAHAUDIN",
         "STATUS": "JILID VI"
     },
     {
@@ -401,7 +401,7 @@ const data = [
     {
         "NAMA": "DARIN ADELLIA AZ-ZAHRA",
         "PEMBIMBING AWAL": "USTADZ SYARIF",
-        "PEMBIMBING BARU": "USTADZAH SANAH",
+        "PEMBIMBING BARU": "USTADZ BAHAUDIN",
         "STATUS": "JILID VI"
     },
     {
@@ -455,8 +455,8 @@ const data = [
     {
         "NAMA": "M. NOR RAHMAN",
         "PEMBIMBING AWAL": "USTADZ TAHMID",
-        "PEMBIMBING BARU": "USTADZ HUSSAINI",
-        "STATUS": "JILID QURAN"
+        "PEMBIMBING BARU": "USTADZ BAHAUDIN",
+        "STATUS": "JILID VI"
     },
     {
         "NAMA": "M.HUSEIN ALFANI",
@@ -485,8 +485,8 @@ const data = [
     {
         "NAMA": "ALYA IMANI",
         "PEMBIMBING AWAL": "USTADZ TAHMID",
-        "PEMBIMBING BARU": "USTADZ TAHMID",
-        "STATUS": "JILID V"
+        "PEMBIMBING BARU": "USTADZAH SANAH",
+        "STATUS": "JILID VI"
     },
     {
         "NAMA": "NABILA AFIQOH",
@@ -504,6 +504,12 @@ const data = [
         "NAMA": "MUHAMMAD FAHMI RAMADHAN",
         "PEMBIMBING AWAL": "USTADZ TAHMID",
         "PEMBIMBING BARU": "USTADZ THOHIR",
+        "STATUS": "JILID VI"
+    },
+    {
+        "NAMA": "MUHAMMAD RAFKA FAIZAR",
+        "PEMBIMBING AWAL": "USTADZ TAHMID",
+        "PEMBIMBING BARU": "USTADZAH SANAH",
         "STATUS": "JILID VI"
     },
     {
@@ -653,7 +659,7 @@ const data = [
     {
         "NAMA": "NADHIFA AYU FAIQAH",
         "PEMBIMBING AWAL": "USTADZAH ANA",
-        "PEMBIMBING BARU": "USTADZAH NISA",
+        "PEMBIMBING BARU": "USTADZ BAHAUDIN",
         "STATUS": "JILID V"
     },
     {
@@ -1137,6 +1143,12 @@ const data = [
         "STATUS": "JILID I"
     },
     {
+        "NAMA": "AFFABIAN MUSYAFA AHMAD",
+        "PEMBIMBING AWAL": "USTADZAH DINDA",
+        "PEMBIMBING BARU": "USTADZAH EVI",
+        "STATUS": "JILID I"
+    },
+    {
         "NAMA": "AFIQAH NAILA",
         "PEMBIMBING AWAL": "USTADZAH DINDA",
         "PEMBIMBING BARU": "USTADZAH EVI",
@@ -1499,7 +1511,7 @@ const data = [
     {
         "NAMA": "NAZIA ARSYIFA",
         "PEMBIMBING AWAL": "USTADZAH NISA",
-        "PEMBIMBING BARU": "USTADZAH SANAH",
+        "PEMBIMBING BARU": "USTADZ BAHAUDIN",
         "STATUS": "JILID VI"
     },
     {
