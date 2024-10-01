@@ -1,65 +1,169 @@
-<html>
+<!DOCTYPE html>
+<html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pembimbing Baru Santri Rumah Tahfidz Saijaan</title>
-<style>
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-  }
-  header, footer {
-    background-color: #800000;
-    color: white;
-    text-align: center;
-    padding: 1rem;
-  }
-  main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start; /* Ubah menjadi flex-start agar bisa menyesuaikan */
-    padding: 0; /* Menghilangkan padding untuk responsif */
-    width: 100%; /* Pastikan lebar 100% */
-  }
-  h1 {
-    margin-bottom: 1rem; /* Mengurangi margin untuk tampilan lebih baik di mobile */
-  }
-  #distribution-container {
-    width: 100%;
-    height: 70vh; /* Menggunakan 70% dari tinggi viewport */
-    border: none;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    overflow: hidden; /* Menyembunyikan overflow */
-    transform-origin: top left; /* Menjaga asal transform ketika load */
-  }
-  @media (max-width: 768px) {
-    h1 {
-      font-size: 1.5rem;
-    }
-    #distribution-container {
-      height: 50vh; /* Menyesuaikan tinggi untuk perangkat mobile */
-    }
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rumah Tahfidz Saijaan</title>
+    <style>
+        :root {
+            --maroon: #800000;
+            --dark-maroon: #A52A2A;
+            --off-white: #F5F5F5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            font-size: 16px; /* Ukuran font dasar */
+        }
+
+        header {
+            background-color: var(--maroon);
+            color: white;
+            text-align: center;
+            padding: 1rem;
+        }
+
+        main {
+            flex: 1;
+            padding: 1rem; /* Padding lebih kecil agar lebih responsif */
+            background-color: var(--off-white);
+        }
+
+        .content {
+            background-color: white;
+            padding: 1rem; /* Padding lebih kecil di dalam konten */
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        /* Tabel responsif */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            table-layout: auto; /* Mengubah layout tabel untuk menyesuaikan lebar kolom */
+            overflow: hidden; /* Menghindari overflow */
+            word-wrap: break-word; /* Memungkinkan teks panjang terputus */
+        }
+
+        th, td {
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            text-align: center; /* Rata tengah */
+            overflow: hidden; /* Mencegah teks meluber */
+            text-overflow: ellipsis; /* Menambahkan elipsis jika teks terlalu panjang */
+            white-space: normal; /* Mencegah teks melompat ke baris berikutnya */
+        }
+
+        th {
+            background-color: var(--maroon); /* Warna latar belakang maroon untuk header */
+            color: white; /* Warna teks putih untuk header */
+            position: sticky; /* Menetapkan posisi header agar tetap */
+            top: 0; /* Menentukan posisi tetap di bagian atas */
+            z-index: 10; /* Memastikan header berada di atas konten tabel */
+        }
+
+        /* Menambahkan warna merah maroon untuk teks header */
+        .header-row {
+            color: var(--maroon); /* Warna teks maroon untuk baris header */
+            text-align: center; /* Rata tengah */
+            font-weight: bold; /* Menguatkan teks */
+            font-size: 18px; /* Ukuran font untuk baris header */
+            margin-bottom: 1rem; /* Jarak bawah */
+        }
+
+        @media (max-width: 600px) {
+            body {
+                font-size: 14px; /* Ukuran font dasar lebih kecil */
+            }
+
+            main {
+                padding: 1rem; /* Mengurangi padding di bagian utama */
+            }
+
+            .content {
+                padding: 1rem; /* Mengurangi padding di dalam konten */
+            }
+
+            table {
+                font-size: 12px; /* Ukuran font lebih kecil untuk tabel */
+            }
+
+            th, td {
+                padding: 0.25rem; /* Padding yang lebih kecil */
+            }
+
+            .header-row {
+                font-size: 14px; /* Ukuran font lebih kecil pada layar kecil */
+            }
+        }
+
+        footer {
+            background-color: var(--maroon);
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            margin-top: 2rem;
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <h1>Pembimbing Baru Santri Rumah Tahfidz Saijaan</h1>
-  </header>
+    <header>
+        <h1>Rumah Tahfidz Saijaan</h1>
+    </header>
 
-  <main>
-    <iframe id="distribution-container" src="distribusi.html"></iframe>
-  </main>
+    <main>
+        <div class="content">
+            <h2>DAFTAR PEMBIMBING BARU SANTRI</h2>
+            
+            <!-- Baris header tambahan untuk NAMA, PEMBIMBING AWAL, PEMBIMBING BARU, STATUS -->
+            <div class="header-row">
+                NAMA &nbsp; | &nbsp; PEMBIMBING AWAL &nbsp; | &nbsp; PEMBIMBING BARU &nbsp; | &nbsp; STATUS
+            </div>
 
-  <footer>
-    <p>&copy; 2023 Rumah Tahfidz Saijaan. All rights reserved.</p>
-  </footer>
-
+            <div id="distribusiContent">
+                <!-- Konten dari script.js akan dimuat di sini -->
+                <table>
+                    <thead>
+                        <tr>
+                            <th>NAMA</th>
+                            <th>PEMBIMBING AWAL</th>
+                            <th>PEMBIMBING BARU</th>
+                            <th>STATUS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data akan dimuat di sini -->
+                    </tbody>
+                </table>
+            </div>
+            <a href="https://juniwardani.github.io/kelasbaru/" class="btn">DAFTAR KELAS BARU</a>
+        </div>
+    </main>
+    
+    <script src="script.js"></script>
+    <script>
+        // Memanggil fungsi untuk memuat konten saat halaman dimuat
+        loadContent();
+    </script>
+    
+    <footer>
+        <p>&copy; 2024 Rumah Tahfidz Saijaan. All rights reserved.</p>
+    </footer>
 </body>
 </html>
