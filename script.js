@@ -1325,14 +1325,14 @@ const data = [
     {
         "NAMA": "MUHAMMAD SAKHA AT THAHIR RAMADHAN",
         "PEMBIMBING AWAL": "USTADZAH EVI",
-        "PEMBIMBING BARU": "USTADZ TAHMID",
-        "STATUS": "JILID III"
+        "PEMBIMBING BARU": "USTADZAH DIAH",
+        "STATUS": "JILID IV"
     },
     {
         "NAMA": "HAVA HARAIDAN SAFIRA",
         "PEMBIMBING AWAL": "USTADZAH EVI",
-        "PEMBIMBING BARU": "USTADZ TAHMID",
-        "STATUS": "JILID III"
+        "PEMBIMBING BARU": "JUNI WARDANI",
+        "STATUS": "JILID IV"
     },
     {
         "NAMA": "AHMAD ZAINI DAHLAN",
