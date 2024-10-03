@@ -1389,6 +1389,18 @@ const data = [
         "STATUS": "JILID II"
     },
     {
+        "NAMA": "MUHAMMAD ARSHAD AL FATIH ASTADIWANGSA",
+        "PEMBIMBING AWAL": "USTADZAH NISA",
+        "PEMBIMBING BARU": "USTADZAH DIAH",
+        "STATUS": "JILID II"
+    },
+    {
+        "NAMA": "RAFFA MULYATAMA SARAGIH",
+        "PEMBIMBING AWAL": "USTADZAH NISA",
+        "PEMBIMBING BARU": "USTADZAH DIAH",
+        "STATUS": "JILID II"
+    },
+    {
         "NAMA": "ANDI ARSYILA HUMAIRA",
         "PEMBIMBING AWAL": "USTADZAH NISA",
         "PEMBIMBING BARU": "USTADZAH EVI",
@@ -1468,6 +1480,12 @@ const data = [
     },
     {
         "NAMA": "SASKIA ANASTASYA",
+        "PEMBIMBING AWAL": "USTADZAH NISA",
+        "PEMBIMBING BARU": "USTADZAH NISA",
+        "STATUS": "JILID V"
+    },
+    {
+        "NAMA": "MUHAMMAD ZAIDAN RAHMAN",
         "PEMBIMBING AWAL": "USTADZAH NISA",
         "PEMBIMBING BARU": "USTADZAH NISA",
         "STATUS": "JILID V"
