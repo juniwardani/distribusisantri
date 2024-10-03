@@ -185,7 +185,7 @@ const data = [
     {
         "NAMA": "GERRAD NAUVALAZKA",
         "PEMBIMBING AWAL": "JUNI WARDANI",
-        "PEMBIMBING BARU": "USTADZAH BAHAUDIN",
+        "PEMBIMBING BARU": "USTADZ BAHAUDIN",
         "STATUS": "JILID VI"
     },
     {
