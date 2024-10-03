@@ -47,7 +47,7 @@ const data = [
     {
         "NAMA": "AKHMAD VIQRI SAPUTRA",
         "PEMBIMBING AWAL": "JUNI WARDANI",
-        "PEMBIMBING BARU": "USTADZAH ASTRID",
+        "PEMBIMBING BARU": "USTADZ SOFYAN",
         "STATUS": "JILID QURAN"
     },
     {
@@ -311,13 +311,13 @@ const data = [
     {
         "NAMA": "NUR ATHIFAH",
         "PEMBIMBING AWAL": "USTADZ SYARIF",
-        "PEMBIMBING BARU": "USTADZAH ASTRID",
+        "PEMBIMBING BARU": "USTADZ SYARIF",
         "STATUS": "JILID QURAN"
     },
     {
         "NAMA": "ALIFA FATHIYYA HAMZAH",
         "PEMBIMBING AWAL": "USTADZ SYARIF",
-        "PEMBIMBING BARU": "USTADZAH ASTRID",
+        "PEMBIMBING BARU": "USTADZ SYARIF",
         "STATUS": "JILID QURAN"
     },
     {
@@ -461,19 +461,19 @@ const data = [
     {
         "NAMA": "M.HUSEIN ALFANI",
         "PEMBIMBING AWAL": "USTADZ TAHMID",
-        "PEMBIMBING BARU": "USTADZAH ASTRID",
+        "PEMBIMBING BARU": "USTADZ SOFYAN",
         "STATUS": "JILID QURAN"
     },
     {
         "NAMA": "SAID FAUZAN ROSIDI",
         "PEMBIMBING AWAL": "USTADZ TAHMID",
-        "PEMBIMBING BARU": "USTADZAH ASTRID",
+        "PEMBIMBING BARU": "USTADZ SOFYAN",
         "STATUS": "JILID QURAN"
     },
     {
         "NAMA": "SELVIA KHAIRUN ASPIA",
         "PEMBIMBING AWAL": "USTADZ TAHMID",
-        "PEMBIMBING BARU": "USTADZAH ASTRID",
+        "PEMBIMBING BARU": "USTADZ SYARIF",
         "STATUS": "JILID QURAN"
     },
     {
