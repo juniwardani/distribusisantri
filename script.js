@@ -1587,7 +1587,19 @@ const data = [
         "STATUS": "JILID IV"
     },
     {
-        "NAMA": "M. Reza Efansyah",
+        "NAMA": "M. REZA EFANSYAH",
+        "PEMBIMBING AWAL": "USTADZAH SHALATIYAH",
+        "PEMBIMBING BARU": "JUNI WARDANI",
+        "STATUS": "JILID IV"
+    },
+    {
+        "NAMA": "MUHAMMAD HABIBIE",
+        "PEMBIMBING AWAL": "USTADZAH SHALATIYAH",
+        "PEMBIMBING BARU": "USTADZAH SANAH",
+        "STATUS": "JILID IV"
+    },
+    {
+        "NAMA": "ANISA AZAHRA",
         "PEMBIMBING AWAL": "USTADZAH SHALATIYAH",
         "PEMBIMBING BARU": "JUNI WARDANI",
         "STATUS": "JILID IV"
@@ -1608,6 +1620,12 @@ const data = [
         "NAMA": "M.AZKA RIDLONI.                  ",
         "PEMBIMBING AWAL": "USTADZAH SHALATIYAH",
         "PEMBIMBING BARU": "USTADZAH SHALATIYAH",
+        "STATUS": "JILID V"
+    },
+    {
+        "NAMA": "AKHMAD HABIBIE",
+        "PEMBIMBING AWAL": "USTADZAH SHALATIYAH",
+        "PEMBIMBING BARU": "USTADZ TAHMID",
         "STATUS": "JILID V"
     },
     {
