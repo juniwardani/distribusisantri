@@ -3,150 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rumah Tahfidz Saijaan</title>
-    <style>
-        :root {
-            --maroon: #800000;
-            --dark-maroon: #A52A2A;
-            --off-white: #F5F5F5;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            font-size: 16px; /* Ukuran font dasar */
-        }
-
-        header {
-            background-color: var(--maroon);
-            color: white;
-            text-align: center;
-            padding: 1rem;
-        }
-
-        main {
-            flex: 1;
-            padding: 1rem; /* Padding lebih kecil agar lebih responsif */
-            background-color: var(--off-white);
-        }
-
-        .content {
-            background-color: white;
-            padding: 1rem; /* Padding lebih kecil di dalam konten */
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-
-        h2 {
-            text-align: center;
-        }
-
-        /* Tabel responsif */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 1rem;
-            table-layout: auto; /* Mengubah layout tabel untuk menyesuaikan lebar kolom */
-            overflow: hidden; /* Menghindari overflow */
-            word-wrap: break-word; /* Memungkinkan teks panjang terputus */
-        }
-
-        th, td {
-            padding: 0.5rem;
-            border: 1px solid #ccc;
-            text-align: center; /* Rata tengah */
-            overflow: hidden; /* Mencegah teks meluber */
-            text-overflow: ellipsis; /* Menambahkan elipsis jika teks terlalu panjang */
-            white-space: normal; /* Mencegah teks melompat ke baris berikutnya */
-        }
-
-        .special-row {
-            background-color: maroon;
-            color: white;
-        }
-
-        th {
-            background-color: var(--maroon); /* Warna latar belakang maroon untuk header */
-            color: white; /* Warna teks putih untuk header */
-        }
-
-        @media (max-width: 600px) {
-            body {
-                font-size: 14px; /* Ukuran font dasar lebih kecil */
-            }
-
-            main {
-                padding: 1rem; /* Mengurangi padding di bagian utama */
-            }
-
-            .content {
-                padding: 1rem; /* Mengurangi padding di dalam konten */
-            }
-
-            table {
-                font-size: 12px; /* Ukuran font lebih kecil untuk tabel */
-            }
-
-            th, td {
-                padding: 0.25rem; /* Padding yang lebih kecil */
-            }
-        }
-
-        footer {
-            background-color: var(--maroon);
-            color: white;
-            text-align: center;
-            padding: 1rem;
-            margin-top: 2rem;
-        }
-    </style>
+    <title>Ubah Kelas Siswa</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
-        <h1>Rumah Tahfidz Saijaan</h1>
-    </header>
+    <h1>Daftar Siswa dan Kelas</h1>
+    <table id="siswaTable">
+        <thead>
+            <tr>
+                <th>Nama Siswa</th>
+                <th>Kelas</th>
+                <th>Ubah Kelas</th>
+            </tr>
+        </thead>
+        <tbody id="siswaBody">
+            <!-- Baris siswa akan dimuat dari JavaScript -->
+        </tbody>
+    </table>
 
-    <main>
-        <div class="content">
-            <h2>DAFTAR PEMBIMBING BARU SANTRI</h2>
-            <div id="distribusiContent">
-                <!-- Konten dari script.js akan dimuat di sini -->
-                <table>
-                    <thead>
-                        <tr>
-                            <th class="maroon-text">NAMA</th>
-                            <th class="maroon-text">PEMBIMBING AWAL</th>
-                            <th class="maroon-text">PEMBIMBING BARU</th>
-                            <th class="maroon-text">STATUS</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Data akan dimuat di sini -->
-                    </tbody>
-                </table>
-            </div>
-            <a href="https://juniwardani.github.io/kelasbaru/" class="btn">DAFTAR KELAS BARU</a>
-        </div>
-    </main>
-    
     <script src="script.js"></script>
-    <script>
-        // Memanggil fungsi untuk memuat konten saat halaman dimuat
-        loadContent();
-    </script>
-    
-    <footer>
-        <p>&copy; 2024 Rumah Tahfidz Saijaan. All rights reserved.</p>
-    </footer>
 </body>
 </html>
