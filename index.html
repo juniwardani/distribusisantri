@@ -3,57 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ubah Kelas Siswa</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            padding: 20px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th, td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: left;
-        }
-
-        th {
-            background-color: #f2f2f2;
-        }
-
-        button {
-            padding: 5px 10px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #45a049;
-        }
-    </style>
+    <title>Daftar Siswa</title>
 </head>
 <body>
-    <h1>Daftar Siswa dan Kelas</h1>
-    <table id="siswaTable">
-        <thead>
-            <tr>
-                <th>Nama Siswa</th>
-                <th>Kelas</th>
-                <th>Ubah Kelas</th>
-            </tr>
-        </thead>
-        <tbody id="siswaBody">
-            <!-- Baris siswa akan dimuat dari JavaScript -->
-        </tbody>
-    </table>
+    <h1>Daftar Siswa</h1>
+    <ul id="siswaList"></ul>
 
-    <script src="script.js"></script>
+    <script>
+        const students = [
+            { NAMA: 'Ahmad', STATUS: 'Kelas 10' },
+            { NAMA: 'Budi', STATUS: 'Kelas 10' },
+            { NAMA: 'Citra', STATUS: 'Kelas 10' },
+            // Tambahkan 7 siswa lainnya di sini
+        ];
+
+        const siswaList = document.getElementById('siswaList');
+
+        function displayStudents() {
+            siswaList.innerHTML = '';
+            students.forEach(student => {
+                const li = document.createElement('li');
+                li.textContent = `${student.NAMA} - ${student.STATUS}`;
+                siswaList.appendChild(li);
+            });
+        }
+
+        displayStudents();
+
+        // Fungsi untuk mengganti kelas siswa
+        function changeClassForStudents(newClass) {
+            students.forEach(student => {
+                student.STATUS = newClass;
+            });
+            displayStudents();
+        }
+
+        // Simulasi perubahan kelas
+        setTimeout(() => {
+            changeClassForStudents('Kelas 11');
+        }, 3000); // Setelah 3 detik, kelas siswa akan berubah
+    </script>
 </body>
 </html>
