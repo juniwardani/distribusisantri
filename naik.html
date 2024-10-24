@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Santri</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const supabaseUrl = 'https://lrkechznknwqnxckyfcg.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxya2VjaHpua253cW54Y2t5ZmNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjkxMjgzODEsImV4cCI6MjA0NDcwNDM4MX0.Tj8p1u3_DGQnqhPkS6AJGs5BwOSeebdvsknX2qHzwdQ';
+    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+    async function loadData() {
+      try {
+        // Ambil semua data santri, guru, dan kelas
+        const { data: santriData, error: santriError } = await supabaseClient
+          .from('santri')
+          .select('GURU, KELAS');
+
+        if (santriError) throw santriError;
+
+        // Dapatkan nilai unik untuk GURU dan KELAS
+        window.guruSet = new Set(santriData.map(item => item.GURU));
+        window.kelasSet = new Set(santriData.map(item => item.KELAS));
+
+        // Isi dropdown guru
+        const guruDropdown = document.getElementById('guruFilter');
+        guruDropdown.innerHTML = '<option value="">Semua Guru</option>';
+        window.guruSet.forEach(guru => {
+          if (guru) {
+            const option = document.createElement('option');
+            option.value = guru;
+            option.textContent = guru;
+            guruDropdown.appendChild(option);
+          }
+        });
+
+        // Simpan data kelas berdasarkan guru
+        window.kelasPerGuru = {};
+        santriData.forEach(item => {
+          if (!window.kelasPerGuru[item.GURU]) {
+            window.kelasPerGuru[item.GURU] = new Set();
+          }
+          window.kelasPerGuru[item.GURU].add(item.KELAS);
+        });
+
+        // Inisialisasi dropdown kelas
+        updateKelasDropdown();
+
+        // Load data awal
+        await filterData();
+      } catch (error) {
+        console.error('Error loading data:', error);
+        alert('Terjadi kesalahan saat memuat data. Silakan coba lagi.');
+      }
+    }
+
+    function updateKelasDropdown() {
+      const guruDropdown = document.getElementById('guruFilter');
+      const kelasDropdown = document.getElementById('kelasFilter');
+      const selectedGuru = guruDropdown.value;
+
+      kelasDropdown.innerHTML = '<option value="">Semua Kelas</option>';
+
+      if (selectedGuru === "" || (selectedGuru && window.kelasPerGuru[selectedGuru])) {
+        const kelasSet = selectedGuru === "" ? 
+          new Set([].concat(...Object.values(window.kelasPerGuru))) : 
+          window.kelasPerGuru[selectedGuru];
+
+        kelasSet.forEach(kelas => {
+          if (kelas) {
+            const option = document.createElement('option');
+            option.value = kelas;
+            option.textContent = kelas;
+            kelasDropdown.appendChild(option);
+          }
+        });
+      }
+    }
+
+    async function filterData() {
+      const guru = document.getElementById('guruFilter').value;
+      const kelas = document.getElementById('kelasFilter').value;
+
+      try {
+        let query = supabaseClient
+          .from('santri')
+          .select('*');
+
+        if (guru) {
+          query = query.eq('GURU', guru);
+        }
+        if (kelas) {
+          query = query.eq('KELAS', kelas);
+        }
+
+        const { data, error } = await query;
+
+        if (error) throw error;
+
+        displayData(data);
+      } catch (error) {
+        console.error('Error filtering data:', error);
+        alert('Terjadi kesalahan saat memfilter data. Silakan coba lagi.');
+      }
+    }
+
+    function displayData(data) {
+      const tableBody = document.getElementById('santriTableBody');
+      tableBody.innerHTML = '';
+
+      data.forEach((santri, index) => {
+        const row = tableBody.insertRow();
+        row.insertCell(0).textContent = index + 1;
+        row.insertCell(1).textContent = santri.NAMA;
+        row.insertCell(2).textContent = santri.NOINFAQ;
+        
+        const actionCell = row.insertCell(3);
+        const editButton = document.createElement('button');
+        editButton.textContent = 'Edit';
+        editButton.onclick = () => editSantri(santri);
+        actionCell.appendChild(editButton);
+      });
+    }
+
+    async function editSantri(santri) {
+      const modal = document.createElement('div');
+      modal.className = 'modal';
+
+      const form = document.createElement('form');
+      form.className = 'modal-content';
+
+      form.innerHTML = `
+        <h2>Edit Data Santri</h2>
+        <p>Nama: ${santri.NAMA}</p>
+        <p>No. Infaq: ${santri.NOINFAQ}</p>
+        
+        <label for="guruEdit">Guru:</label>
+        <select id="guruEdit">
+          <option value="">Pilih Guru</option>
+          ${Array.from(window.guruSet).map(guru => `<option value="${guru}" ${guru === santri.GURU ? 'selected' : ''}>${guru}</option>`).join('')}
+          <option value="new">Tambah Guru Baru</option>
+        </select>
+        <input type="text" id="guruEditNew" style="display:none;" placeholder="Masukkan nama guru baru">
+        <br><br>
+        
+        <label for="kelasEdit">Kelas:</label>
+        <select id="kelasEdit">
+          <option value="">Pilih Kelas</option>
+          ${Array.from(window.kelasSet).map(kelas => `<option value="${kelas}" ${kelas === santri.KELAS ? 'selected' : ''}>${kelas}</option>`).join('')}
+          <option value="new">Tambah Kelas Baru</option>
+        </select>
+        <input type="text" id="kelasEditNew" style="display:none;" placeholder="Masukkan nama kelas baru">
+        <br><br>
+        
+        <button type="submit">Simpan</button>
+        <button type="button" onclick="this.closest('.modal').remove()">Batal</button>
+      `;
+
+      form.onsubmit = async (e) => {
+        e.preventDefault();
+        let guru = document.getElementById('guruEdit').value;
+        let kelas = document.getElementById('kelasEdit').value;
+        
+        if (guru === 'new') {
+          guru = document.getElementById('guruEditNew').value;
+          if (!guru) {
+            alert('Silakan masukkan nama guru baru');
+            return;
+          }
+        } else if (!guru) {
+          alert('Silakan pilih guru');
+          return;
+        }
+        
+        if (kelas === 'new') {
+          kelas = document.getElementById('kelasEditNew').value;
+          if (!kelas) {
+            alert('Silakan masukkan nama kelas baru');
+            return;
+          }
+        } else if (!kelas) {
+          alert('Silakan pilih kelas');
+          return;
+        }
+
+        try {
+          // Periksa apakah santri_id sudah ada di tabel riwayat_perpindahan
+          const { data: existingData, error: existingError } = await supabaseClient
+            .from('riwayat_perpindahan')
+            .select('id')
+            .eq('santri_id', santri.id)
+            .single();
+
+          if (existingError && existingError.code !== 'PGRST116') {
+            throw existingError;
+          }
+
+          let riwayatData, riwayatError;
+
+          if (existingData) {
+            // Update data yang sudah ada
+            ({ data: riwayatData, error: riwayatError } = await supabaseClient
+              .from('riwayat_perpindahan')
+              .update({
+                nama: santri.NAMA,
+                noinfaq: santri.NOINFAQ,
+                guru_awal: santri.GURU,
+                guru_baru: guru,
+                kelas_awal: santri.KELAS,
+                kelas_baru: kelas
+              })
+              .eq('santri_id', santri.id));
+          } else {
+            // Insert data baru
+            ({ data: riwayatData, error: riwayatError } = await supabaseClient
+              .from('riwayat_perpindahan')
+              .insert({
+                santri_id: santri.id,
+                nama: santri.NAMA,
+                noinfaq: santri.NOINFAQ,
+                guru_awal: santri.GURU,
+                guru_baru: guru,
+                kelas_awal: santri.KELAS,
+                kelas_baru: kelas
+              }));
+          }
+
+          if (riwayatError) throw riwayatError;
+
+          // Update data santri
+          const { data, error } = await supabaseClient
+            .from('santri')
+            .update({ GURU: guru, KELAS: kelas })
+            .eq('id', santri.id);
+
+          if (error) throw error;
+
+          alert('Data santri berhasil diperbarui');
+          modal.remove();
+          await loadData();
+          await filterData();
+        } catch (error) {
+          console.error('Error updating santri:', error);
+          alert('Terjadi kesalahan saat memperbarui data santri. Silakan coba lagi.');
+        }
+      };
+
+      modal.appendChild(form);
+      document.body.appendChild(modal);
+
+      // Tambahkan event listener untuk menampilkan/menyembunyikan input teks
+      document.getElementById('guruEdit').addEventListener('change', function() {
+        document.getElementById('guruEditNew').style.display = this.value === 'new' ? 'block' : 'none';
+      });
+
+      document.getElementById('kelasEdit').addEventListener('change', function() {
+        document.getElementById('kelasEditNew').style.display = this.value === 'new' ? 'block' : 'none';
+      });
+    }
+
+    async function viewRiwayatPerpindahan() {
+      try {
+        const { data, error } = await supabaseClient
+          .from('riwayat_perpindahan')
+          .select('*');
+
+        if (error) throw error;
+
+        displayRiwayatPerpindahan(data);
+      } catch (error) {
+        console.error('Error fetching riwayat perpindahan:', error);
+        alert('Terjadi kesalahan saat mengambil data riwayat perpindahan. Silakan coba lagi.');
+      }
+    }
+
+    function displayRiwayatPerpindahan(data) {
+      const modal = document.createElement('div');
+      modal.style.position = 'fixed';
+      modal.style.left = '0';
+      modal.style.top = '0';
+      modal.style.width = '100%';
+      modal.style.height = '100%';
+      modal.style.backgroundColor = 'rgba(0,0,0,0.5)';
+      modal.style.display = 'flex';
+      modal.style.justifyContent = 'center';
+      modal.style.alignItems = 'center';
+
+      const content = document.createElement('div');
+      content.style.backgroundColor = 'white';
+      content.style.padding = '20px';
+      content.style.borderRadius = '5px';
+      content.style.maxWidth = '80%';
+      content.style.maxHeight = '80%';
+      content.style.overflow = 'auto';
+
+      content.innerHTML = `
+        <h2>Riwayat Perpindahan Santri</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Nama</th>
+              <th>No. Infaq</th>
+              <th>Guru Awal</th>
+              <th>Guru Baru</th>
+              <th>Kelas Awal</th>
+              <th>Kelas Baru</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${data.map(item => `
+              <tr>
+                <td>${item.nama}</td>
+                <td>${item.noinfaq}</td>
+                <td>${item.guru_awal}</td>
+                <td>${item.guru_baru}</td>
+                <td>${item.kelas_awal}</td>
+                <td>${item.kelas_baru}</td>
+                <td>
+                  <button onclick="editRiwayat(${item.id})">Edit</button>
+                  <button onclick="hapusRiwayat(${item.id})">Hapus</button>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+        <button onclick="closeModal(this)">Tutup</button>
+        <button onclick="downloadRiwayatPerpindahan()">Unduh Data</button>
+      `;
+
+      modal.appendChild(content);
+      document.body.appendChild(modal);
+    }
+
+    function closeModal(button) {
+      const modal = button.closest('div').parentNode;
+      document.body.removeChild(modal);
+    }
+
+    function downloadRiwayatPerpindahan() {
+      const table = document.querySelector('table');
+      const csv = [];
+      for (const row of table.rows) {
+        const cells = row.cells;
+        const csvRow = [];
+        for (const cell of cells) {
+          csvRow.push(cell.innerText);
+        }
+        csv.push(csvRow.join(','));
+      }
+      const csvContent = csv.join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      if (link.download !== undefined) {
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', 'riwayat_perpindahan.csv');
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    }
+
+    async function editRiwayat(id) {
+      try {
+        const { data, error } = await supabaseClient
+          .from('riwayat_perpindahan')
+          .select('*')
+          .eq('id', id)
+          .single();
+
+        if (error) throw error;
+
+        const modal = document.createElement('div');
+        modal.style.position = 'fixed';
+        modal.style.left = '0';
+        modal.style.top = '0';
+        modal.style.width = '100%';
+        modal.style.height = '100%';
+        modal.style.backgroundColor = 'rgba(0,0,0,0.5)';
+        modal.style.display = 'flex';
+        modal.style.justifyContent = 'center';
+        modal.style.alignItems = 'center';
+
+        const form = document.createElement('form');
+        form.style.backgroundColor = 'white';
+        form.style.padding = '20px';
+        form.style.borderRadius = '5px';
+
+        form.innerHTML = `
+          <h2>Edit Riwayat Perpindahan</h2>
+          <label for="nama">Nama:</label>
+          <input type="text" id="nama" value="${data.nama}" required><br><br>
+          <label for="noinfaq">No. Infaq:</label>
+          <input type="text" id="noinfaq" value="${data.noinfaq}" required><br><br>
+          <label for="guru_awal">Guru Awal:</label>
+          <input type="text" id="guru_awal" value="${data.guru_awal}" required><br><br>
+          <label for="guru_baru">Guru Baru:</label>
+          <input type="text" id="guru_baru" value="${data.guru_baru}" required><br><br>
+          <label for="kelas_awal">Kelas Awal:</label>
+          <input type="text" id="kelas_awal" value="${data.kelas_awal}" required><br><br>
+          <label for="kelas_baru">Kelas Baru:</label>
+          <input type="text" id="kelas_baru" value="${data.kelas_baru}" required><br><br>
+          <button type="submit">Simpan</button>
+          <button type="button" onclick="this.closest('div').remove()">Batal</button>
+        `;
+
+        form.onsubmit = async (e) => {
+          e.preventDefault();
+          const updatedData = {
+            nama: document.getElementById('nama').value,
+            noinfaq: document.getElementById('noinfaq').value,
+            guru_awal: document.getElementById('guru_awal').value,
+            guru_baru: document.getElementById('guru_baru').value,
+            kelas_awal: document.getElementById('kelas_awal').value,
+            kelas_baru: document.getElementById('kelas_baru').value,
+          };
+
+          try {
+            const { error } = await supabaseClient
+              .from('riwayat_perpindahan')
+              .update(updatedData)
+              .eq('id', id);
+
+            if (error) throw error;
+
+            alert('Data riwayat berhasil diperbarui');
+            modal.remove();
+            viewRiwayatPerpindahan();
+          } catch (error) {
+            console.error('Error updating riwayat:', error);
+            alert('Terjadi kesalahan saat memperbarui data riwayat. Silakan coba lagi.');
+          }
+        };
+
+        modal.appendChild(form);
+        document.body.appendChild(modal);
+      } catch (error) {
+        console.error('Error fetching riwayat data:', error);
+        alert('Terjadi kesalahan saat mengambil data riwayat. Silakan coba lagi.');
+      }
+    }
+
+    async function hapusRiwayat(id) {
+      if (confirm('Apakah Anda yakin ingin menghapus riwayat ini?')) {
+        try {
+          const { error } = await supabaseClient
+            .from('riwayat_perpindahan')
+            .delete()
+            .eq('id', id);
+
+          if (error) throw error;
+
+          alert('Data riwayat berhasil dihapus');
+          viewRiwayatPerpindahan();
+        } catch (error) {
+          console.error('Error deleting riwayat:', error);
+          alert('Terjadi kesalahan saat menghapus data riwayat. Silakan coba lagi.');
+        }
+      }
+    }
+
+    window.onload = loadData;
+  </script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 100%;
+      margin: 0 auto;
+      padding: 10px;
+    }
+    h1 {
+      text-align: center;
+      font-size: 24px;
+    }
+    .filters {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    select, button {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+      font-size: 14px;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    
+    @media screen and (min-width: 768px) {
+      body {
+        max-width: 800px;
+        padding: 20px;
+      }
+      h1 {
+        font-size: 32px;
+      }
+      .filters {
+        flex-direction: row;
+        justify-content: space-between;
+      }
+      select, button {
+        width: auto;
+      }
+      th, td {
+        font-size: 16px;
+      }
+    }
+
+    /* Gaya untuk modal edit data santri */
+    .modal {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      max-width: 90%;
+      width: 400px;
+    }
+
+    .modal h2 {
+      color: #333;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .modal p {
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+
+    .modal label {
+      display: block;
+      margin-bottom: 5px;
+      color: #555;
+    }
+
+    .modal select,
+    .modal input[type="text"] {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+
+    .modal input[type="text"] {
+      margin-top: 5px;
+    }
+
+    .modal button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      margin-right: 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .modal button:hover {
+      background-color: #45a049;
+    }
+
+    .modal button[type="button"] {
+      background-color: #f44336;
+    }
+
+    .modal button[type="button"]:hover {
+      background-color: #d32f2f;
+    }
+
+    @media screen and (max-width: 480px) {
+      .modal-content {
+        width: 95%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>PERPINDAHAN KELAS SANTRI</h1>
+  <div class="filters">
+    <select id="guruFilter" onchange="updateKelasDropdown(); filterData();">
+      <option value="">Semua Guru</option>
+    </select>
+    <select id="kelasFilter" onchange="filterData()">
+      <option value="">Semua Kelas</option>
+    </select>
+    <button onclick="viewRiwayatPerpindahan()">Lihat Riwayat Perpindahan</button>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>No.</th>
+        <th>Nama</th>
+        <th>No. Infaq</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody id="santriTableBody">
+    </tbody>
+  </table>
+</body>
+</html>

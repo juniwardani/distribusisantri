@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tambah Santri Baru</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const supabaseUrl = 'https://lrkechznknwqnxckyfcg.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxya2VjaHpua253cW54Y2t5ZmNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjkxMjgzODEsImV4cCI6MjA0NDcwNDM4MX0.Tj8p1u3_DGQnqhPkS6AJGs5BwOSeebdvsknX2qHzwdQ';
+    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+    async function tambahSantri() {
+      const nama = document.getElementById('nama').value;
+      const guru = document.getElementById('guru').value;
+      const noinfaq = document.getElementById('noinfaq').value;
+      const kelas = document.getElementById('kelas').value;
+
+      if (!nama || !guru || !noinfaq || !kelas) {
+        alert('Mohon isi semua field!');
+        return;
+      }
+
+      try {
+        // Dapatkan ID terakhir dari tabel santri
+        const { data: lastSantri, error: fetchError } = await supabaseClient
+          .from('santri')
+          .select('id')
+          .order('id', { ascending: false })
+          .limit(1);
+
+        if (fetchError) throw fetchError;
+
+        // Hitung ID baru
+        const newId = lastSantri.length > 0 ? lastSantri[0].id + 1 : 1;
+
+        // Tambahkan santri baru dengan ID yang dihitung
+        const { data, error } = await supabaseClient
+          .from('santri')
+          .insert([{ id: newId, NAMA: nama, GURU: guru, NOINFAQ: noinfaq, KELAS: kelas }]);
+
+        if (error) throw error;
+
+        alert('Santri baru berhasil ditambahkan!');
+        document.getElementById('formTambahSantri').reset();
+      } catch (error) {
+        console.error('Error menambahkan santri:', error);
+        alert('Terjadi kesalahan saat menambahkan santri. Silakan coba lagi.');
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+    label {
+      margin-top: 10px;
+    }
+    input {
+      padding: 5px;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 10px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <h1>Tambah Santri Baru</h1>
+  <form id="formTambahSantri">
+    <label for="nama">Nama:</label>
+    <input type="text" id="nama" required>
+
+    <label for="guru">Guru:</label>
+    <input type="text" id="guru" required>
+
+    <label for="noinfaq">No. Infaq:</label>
+    <input type="text" id="noinfaq" required>
+
+    <label for="kelas">Kelas:</label>
+    <input type="text" id="kelas" required>
+
+    <button type="button" onclick="tambahSantri()">Tambah Santri</button>
+  </form>
+</body>
+</html>
