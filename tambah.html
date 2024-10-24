@@ -10,6 +10,49 @@
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxya2VjaHpua253cW54Y2t5ZmNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjkxMjgzODEsImV4cCI6MjA0NDcwNDM4MX0.Tj8p1u3_DGQnqhPkS6AJGs5BwOSeebdvsknX2qHzwdQ';
     const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
+    async function loadOptions() {
+      try {
+        const { data, error } = await supabaseClient
+          .from('santri')
+          .select('GURU, KELAS');
+
+        if (error) throw error;
+
+        const guruSet = new Set(data.map(item => item.GURU));
+        const kelasSet = new Set(data.map(item => item.KELAS));
+
+        const guruSelect = document.getElementById('guru');
+        const kelasSelect = document.getElementById('kelas');
+
+        guruSelect.innerHTML = '<option value="">Pilih Guru</option>';
+        kelasSelect.innerHTML = '<option value="">Pilih Kelas</option>';
+
+        guruSet.forEach(guru => {
+          if (guru) {
+            const option = document.createElement('option');
+            option.value = guru;
+            option.textContent = guru;
+            guruSelect.appendChild(option);
+          }
+        });
+
+        kelasSet.forEach(kelas => {
+          if (kelas) {
+            const option = document.createElement('option');
+            option.value = kelas;
+            option.textContent = kelas;
+            kelasSelect.appendChild(option);
+          }
+        });
+      } catch (error) {
+        console.error('Error memuat opsi:', error);
+        alert('Terjadi kesalahan saat memuat daftar guru dan kelas. Silakan muat ulang halaman.');
+      }
+    }
+
+    // Panggil fungsi loadOptions saat halaman dimuat
+    window.onload = loadOptions;
+
     async function tambahSantri() {
       const nama = document.getElementById('nama').value;
       const guru = document.getElementById('guru').value;
@@ -66,16 +109,30 @@
     label {
       margin-top: 10px;
     }
-    input {
-      padding: 5px;
+    input, select {
+      padding: 8px;
       margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    select {
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+      background-repeat: no-repeat;
+      background-position-x: 98%;
+      background-position-y: 50%;
     }
     button {
       padding: 10px;
       background-color: #4CAF50;
       color: white;
       border: none;
+      border-radius: 4px;
       cursor: pointer;
+      font-size: 16px;
     }
     button:hover {
       background-color: #45a049;
@@ -88,14 +145,18 @@
     <label for="nama">Nama:</label>
     <input type="text" id="nama" required>
 
-    <label for="guru">Guru:</label>
-    <input type="text" id="guru" required>
+    <label for="guru">Pembimbing</label>
+    <select id="guru" required>
+      <option value="">Pilih Guru</option>
+    </select>
 
     <label for="noinfaq">No. Infaq:</label>
     <input type="text" id="noinfaq" required>
 
     <label for="kelas">Kelas:</label>
-    <input type="text" id="kelas" required>
+    <select id="kelas" required>
+      <option value="">Pilih Kelas</option>
+    </select>
 
     <button type="button" onclick="tambahSantri()">Tambah Santri</button>
   </form>
