@@ -1,319 +1,514 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rumah Tahfidz Saijaan - Beranda</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
-        body {
-            font-family: 'Poppins', sans-serif;
-            margin: 0;
-            background-color: #f8f8f8;
-            max-width: 100%;
-            margin: 0 auto;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-        a {
-            transition: color 0.3s;
-        }
-        a:hover {
-            color: #e2e8f0;
-        }
-        .card {
-            background-color: #672cfb;
-            padding: 1.5rem;
-            border-radius: 0.375rem;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: box-shadow 0.3s;
-            text-align: center;
-        }
-        .card:hover {
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-        }
-        header, footer {
-            background-color: #6b0f0f;
-            color: #ffffff;
-            padding: 1rem;
-            text-align: center;
-        }
-        .logo {
-            width: 50px;
-            height: auto;
-        }
-        @media screen and (min-width: 600px) {
-            body {
-                max-width: 800px;
-            }
-        }
-    </style>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pencarian Data Siswa</title>
+  <!-- Load Supabase JavaScript library -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f0f4f8;
+      color: #333;
+      line-height: 1.6;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    h1 {
+      color: #fcfcfd;
+      margin-bottom: 1rem;
+    }
+    h2 {
+      color: #03030e;
+      margin-bottom: 1rem;
+    }
+    input[type="text"], button {
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+      transition: all 0.3s ease;
+    }
+    input[type="text"]:focus {
+      border-color: #3498db;
+      box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+    }
+    button {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #2980b9;
+    }
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin-top: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    th {
+      background-color: #34495e;
+      color: white;
+      font-weight: bold;
+    }
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    tr:hover {
+      background-color: #f1f1f1;
+    }
+    header, footer {
+      background-color: #6b0f0f;
+      color: #ffffff;
+      padding: 1rem;
+      text-align: center;
+    }
+    .logo {
+      width: 50px;
+      height: auto;
+    }
+    /* Perbarui gaya berikut untuk tabel responsif */
+    @media (max-width: 640px) {
+      table, tbody, tr {
+        display: block;
+      }
+      
+      thead {
+        display: none;
+      }
+      
+      tr {
+        margin-bottom: 1rem;
+        border: 1px solid #ccc;
+      }
+      
+      td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: none;
+        position: relative;
+        padding: 0.5rem 1rem;
+        text-align: right;
+      }
+      
+      td:before {
+        content: attr(data-label);
+        font-weight: bold;
+        text-align: left;
+      }
+
+      td[data-label="NAMA"] {
+        justify-content: center;
+        font-weight: bold;
+        background-color: #f0f0f0;
+        text-align: center;
+      }
+
+      td[data-label="NAMA"]:before {
+        display: none;
+      }
+
+      td[data-label="NOINFAQ"]:before,
+      td[data-label="Edit"]:before,
+      td[data-label="Hapus"]:before {
+        display: none;
+      }
+
+      td[data-label="NOINFAQ"],
+      td[data-label="Edit"],
+      td[data-label="Hapus"] {
+        justify-content: center;
+      }
+
+      td[data-label="Aksi"] {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+      }
+
+      td[data-label="Aksi"]:before {
+        display: none;
+      }
+    }
+    /* Tambahkan gaya berikut untuk form edit pada tampilan mobile */
+    @media (max-width: 640px) {
+      .swal2-content {
+        text-align: left;
+      }
+
+      .swal2-content label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+
+      .swal2-content input,
+      .swal2-content select {
+        width: 100%;
+        margin-bottom: 15px;
+      }
+
+      .swal2-content input#newName,
+      .swal2-content input#newName + br + br + label {
+        display: block;
+      }
+
+      .swal2-content input#newNoinfaq + br + br + label,
+      .swal2-content select#newGuru + br + br + label,
+      .swal2-content select#newKelas + br + br + label {
+        display: none;
+      }
+    }
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    footer {
+      margin-top: auto;
+    }
+    @media (max-width: 640px) {
+      body {
+        display: flex;
+        flex-direction: column;
+      }
+
+      main {
+        flex: 1 0 auto;
+      }
+
+      footer {
+        flex-shrink: 0;
+      }
+    }
+  </style>
 </head>
-<body class="bg-gray-100">
-    <header>
-        <div class="container mx-auto px-4 py-6 flex items-center">
-            <img src="img/logo.jpg" alt="Logo Rumah Tahfidz Saijaan" class="logo w-12 h-auto mr-1 max-w-xs" />
-            <h1 class="text-2xl md:text-3xl font-bold flex-grow text-center md:text-left">Rumah Tahfidz Saijaan</h1>
-            <div class="md:hidden">
-                <button id="menu-toggle" class="text-white focus:outline-none">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
-                    </svg>
-                </button>
-            </div>
-            <nav class="hidden md:flex space-x-4">
-                <a href="baru.html" class="font-semibold hover:underline">Kelas Aktif</a>
-                <a href="infaq.html" class="font-semibold hover:underline">Cari No. Infaq</a>
-                <a href="abseninfaq.html" class="font-semibold hover:underline">Generator Absen</a>
-                <a href="digital.html" class="font-semibold hover:underline">Absen Digital</a>
-            </nav>
-        </div>
-        <div id="mobile-menu" class="md:hidden hidden">
-            <nav class="flex flex-col items-center space-y-2 mt-4">
-                <a href="baru.html" class="font-semibold hover:underline">Kelas Aktif</a>
-                <a href="infaq.html" class="font-semibold hover:underline">Cari No. Infaq</a>
-                <a href="abseninfaq.html" class="font-semibold hover:underline">Generator Absen</a>
-                <a href="digital.html" class="font-semibold hover:underline">Absen Digital</a>
-            </nav>
-        </div>
-    </header>
+<body class="flex flex-col min-h-screen">
+  <header>
+    <div class="container mx-auto px-4 py-6 flex items-center">
+      <img src="img/logo.jpg" alt="Logo Rumah Tahfidz Saijaan" class="logo w-12 h-auto mr-1 max-w-xs" />
+      <h1 class="text-2xl md:text-3xl font-bold flex-grow text-center md:text-left">Rumah Tahfidz Saijaan</h1>
+      <div class="md:hidden">
+        <button id="menu-toggle" class="text-white focus:outline-none">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+          </svg>
+        </button>
+      </div>
 
-    <main class="container mx-auto px-4 py-8">
-        <h2 class="text-2xl font-semibold mb-6 text-center">Selamat Datang di Sistem Administrasi Santri</h2>
+      <nav class="hidden md:flex space-x-4">
+        <a href="index.html" class="font-semibold hover:underline">Beranda</a>
+        <a href="naik.html" class="font-semibold hover:underline">Kenaikan Kelas</a>
+        <a href="tambah.html" class="font-semibold hover:underline">Tambah Santri</a>
+      </nav>
+    </div>
+    <div id="mobile-menu" class="md:hidden hidden">
+      <nav class="flex flex-col items-center space-y-2 mt-4">
+        <a href="index.html" class="font-semibold hover:underline">Beranda</a>
+        <a href="naik.html" class="font-semibold hover:underline">Kenaikan Kelas</a>
+        <a href="tambah.html" class="font-semibold hover:underline">Tambah Santri</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="flex-grow">
+    <div class="container">
+      <h2 class="text-3xl font-bold mb-6 text-center">UPDATE DATA SANTRI</h2>
+      <div class="search-container mb-8">
+        <label for="searchInput" class="block mb-2 font-semibold">Cari Data Santri</label>
+        <input type="text" id="searchInput" placeholder="Masukkan minimal 2 huruf" class="w-full p-3 rounded-lg shadow-sm" oninput="clearTimeout(searchTimeout); searchTimeout = setTimeout(searchData, 300)">
+      </div>
+      
+      <div class="overflow-x-auto">
+        <table id="resultsTable" class="w-full bg-white rounded-lg overflow-hidden">
+          <thead class="bg-gray-800 text-white">
+            <tr>
+              <th class="py-3 px-4">NAMA</th>
+              <th class="py-3 px-4">NOINFAQ</th>
+              <th class="py-3 px-4">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Data akan diisi di sini -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container mx-auto px-4 py-6">
+      <p class="text-center">&copy; 2024 Rumah Tahfidz Saijaan. Hak Cipta Dilindungi.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Supabase configuration
+    const supabaseUrl = 'https://lrkechznknwqnxckyfcg.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxya2VjaHpua253cW54Y2t5ZmNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjkxMjgzODEsImV4cCI6MjA0NDcwNDM4MX0.Tj8p1u3_DGQnqhPkS6AJGs5BwOSeebdvsknX2qHzwdQ';
+
+    // Inisialisasi Supabase
+    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+    let searchTimeout;
+
+    // Function to search data
+    async function searchData() {
+      const searchInput = document.getElementById('searchInput').value.trim().toLowerCase();
+      const resultsTable = document.getElementById('resultsTable').getElementsByTagName('tbody')[0];
+      resultsTable.innerHTML = ''; // Clear previous results
+
+      // Only search if input has at least 2 characters
+      if (searchInput.length < 2) {
+        return;
+      }
+
+      try {
+        console.log('Mencari:', searchInput);
+        // Query Supabase
+        const { data, error } = await supabaseClient
+          .from('santri')
+          .select('*')
+          .ilike('NAMA', `%${searchInput}%`);
+
+        if (error) throw error;
+
+        console.log('Data yang diterima dari Supabase:', data);
+
+        // Populate results
+        if (data.length === 0) {
+          const row = resultsTable.insertRow();
+          row.insertCell(0).colSpan = 6;
+          row.insertCell(0).innerText = 'Tidak ada data yang ditemukan';
+        } else {
+          data.forEach(student => {
+            const row = resultsTable.insertRow();
+            
+            // Nama
+            const nameCell = row.insertCell();
+            nameCell.setAttribute('data-label', 'NAMA');
+            nameCell.textContent = student.NAMA;
+            
+            // NOINFAQ
+            const noinfaqCell = row.insertCell();
+            noinfaqCell.setAttribute('data-label', 'NOINFAQ');
+            noinfaqCell.textContent = student.NOINFAQ;
+
+            // Aksi (Edit dan Hapus)
+            const actionCell = row.insertCell();
+            actionCell.setAttribute('data-label', 'Aksi');
+            
+            const editButton = document.createElement('button');
+            editButton.textContent = 'Edit';
+            editButton.className = 'edit-btn mr-2';
+            editButton.onclick = () => editData(student.id, student);
+            
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Hapus';
+            deleteButton.className = 'delete-btn';
+            deleteButton.onclick = () => deleteData(student.id);
+            
+            actionCell.appendChild(editButton);
+            actionCell.appendChild(deleteButton);
+          });
+        }
+        console.log('Jumlah baris yang ditambahkan:', resultsTable.rows.length);
+      } catch (error) {
+        console.error("Error fetching data: ", error);
+        alert('Terjadi kesalahan saat mengambil data. Silakan coba lagi.');
+      }
+    }
+
+    // Function to edit data
+    async function editData(id, data) {
+      // Periksa apakah data terdefinisi
+      if (!data) {
+        console.error("Data tidak terdefinisi");
+        Swal.fire('Error', 'Data tidak ditemukan. Silakan coba lagi.', 'error');
+        return;
+      }
+
+      // Ambil daftar guru dan kelas yang unik dari data yang ada
+      const { data: allData, error: fetchError } = await supabaseClient
+        .from('santri')
+        .select('GURU, KELAS');
+
+      if (fetchError) {
+        console.error("Error fetching data: ", fetchError);
+        Swal.fire('Error', 'Terjadi kesalahan saat mengambil data. Silakan coba lagi.', 'error');
+        return;
+      }
+
+      const uniqueGuru = [...new Set(allData.map(item => item.GURU).filter(Boolean))];
+      const uniqueKelas = [...new Set(allData.map(item => item.KELAS).filter(Boolean))];
+
+      // Buat elemen form
+      const form = document.createElement('form');
+      form.innerHTML = `
+        <label for="newName">NAMA:</label>
+        <input type="text" id="newName" value="${data.NAMA || ''}" required><br><br>
         
-        <!-- Tambahkan div untuk menampilkan statistik -->
-        <div id="statistik" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-            <div class="card bg-blue-500 text-white cursor-pointer" id="santriCard">
-                <h3 class="text-xl font-semibold mb-2">Jumlah Santri</h3>
-                <p id="jumlahSantri" class="text-3xl font-bold">-</p>
-            </div>
-            <div class="card bg-green-500 text-white cursor-pointer" id="guruCard">
-                <h3 class="text-xl font-semibold mb-2">Jumlah Guru</h3>
-                <p id="jumlahGuru" class="text-3xl font-bold">-</p>
-            </div>
-            <div class="card bg-yellow-500 text-white cursor-pointer" id="kelasCard">
-                <h3 class="text-xl font-semibold mb-2">Jumlah Kelas</h3>
-                <p id="jumlahKelas" class="text-3xl font-bold">-</p>
-            </div>
-        </div>
+        <input type="text" id="newNoinfaq" value="${data.NOINFAQ || ''}" required><br><br>
         
-        <!-- Tambahkan div untuk menampilkan sebaran santri -->
-        <div id="sebaranSantri" class="hidden mt-8 bg-white p-4 rounded-lg shadow">
-            <h3 class="text-xl font-semibold mb-4">Sebaran Santri per Guru</h3>
-            <div id="sebaranList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <!-- Daftar sebaran akan ditambahkan di sini -->
-            </div>
-        </div>
+        <select id="newGuru">
+          <option value="">Pilih Guru</option>
+          ${uniqueGuru.map(guru => `<option value="${guru}" ${data.GURU === guru ? 'selected' : ''}>${guru}</option>`).join('')}
+          <option value="manual">Tulis Manual</option>
+        </select>
+        <input type="text" id="newGuruManual" style="display:none;"><br><br>
         
-        <!-- Tambahkan div untuk menampilkan daftar guru dan kelas -->
-        <div id="daftarGuru" class="hidden mt-8 bg-white p-4 rounded-lg shadow">
-            <h3 class="text-xl font-semibold mb-4">Daftar Guru dan Kelas</h3>
-            <div id="guruList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <!-- Daftar guru dan kelas akan ditambahkan di sini -->
-            </div>
-        </div>
-        
-        <!-- Tambahkan div untuk menampilkan daftar kelas -->
-        <div id="daftarKelas" class="hidden mt-8 bg-white p-4 rounded-lg shadow">
-            <h3 class="text-xl font-semibold mb-4">Daftar Kelas dan Jumlah Santri</h3>
-            <div id="kelasList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <!-- Daftar kelas akan ditambahkan di sini -->
-            </div>
-        </div>
-        
-        <p class="mb-4 text-center">Silakan pilih halaman yang ingin Anda kunjungi:</p>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <a href="digital.html" class="card">
-                <h3 class="text-xl font-semibold mb-2">ABSENSI DIGITAL</h3>
-                <p>efisien, akurat, cepat, praktis, hemat waktu, mudah diakses</p>
-            </a>
-            <a href="baru.html" class="card">
-                <h3 class="text-xl font-semibold mb-2">KELAS AKTIF</h3>
-                <p>Lihat kelas aktif santri periode September s/d Desember 2024</p>
-            </a>
-        </div>
-    </main>
+        <select id="newKelas">
+          <option value="">Pilih Kelas</option>
+          ${uniqueKelas.map(kelas => `<option value="${kelas}" ${data.KELAS === kelas ? 'selected' : ''}>${kelas}</option>`).join('')}
+          <option value="manual">Tulis Manual</option>
+        </select>
+        <input type="text" id="newKelasManual" style="display:none;">
+      `;
 
-    <footer>
-        <div class="container mx-auto px-4 py-6">
-            <p class="text-center">&copy; 2024 Rumah Tahfidz Saijaan. Hak Cipta Dilindungi.</p>
-        </div>
-    </footer>
+      // Tambahkan event listener untuk menampilkan input manual
+      form.querySelector('#newGuru').addEventListener('change', function() {
+        const manualInput = form.querySelector('#newGuruManual');
+        manualInput.style.display = this.value === 'manual' ? 'block' : 'none';
+      });
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Inisialisasi Supabase client
-            const supabaseUrl = 'https://lrkechznknwqnxckyfcg.supabase.co';
-            const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxya2VjaHpua253cW54Y2t5ZmNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjkxMjgzODEsImV4cCI6MjA0NDcwNDM4MX0.Tj8p1u3_DGQnqhPkS6AJGs5BwOSeebdvsknX2qHzwdQ';
-            const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey, {
-                auth: {
-                    autoRefreshToken: false,
-                    persistSession: false
-                },
-                global: {
-                    headers: {
-                        Authorization: `Bearer ${supabaseKey}`,
-                        apikey: supabaseKey
-                    },
-                },
-            });
+      form.querySelector('#newKelas').addEventListener('change', function() {
+        const manualInput = form.querySelector('#newKelasManual');
+        manualInput.style.display = this.value === 'manual' ? 'block' : 'none';
+      });
 
-            let santriData;
+      // Tampilkan form dalam dialog
+      const result = await Swal.fire({
+        title: 'Edit Data Siswa',
+        html: form,
+        focusConfirm: false,
+        showCancelButton: true,
+        confirmButtonText: 'Simpan',
+        cancelButtonText: 'Batal',
+        preConfirm: () => {
+          const newGuru = document.getElementById('newGuru').value === 'manual' 
+            ? document.getElementById('newGuruManual').value 
+            : document.getElementById('newGuru').value;
+          const newKelas = document.getElementById('newKelas').value === 'manual' 
+            ? document.getElementById('newKelasManual').value 
+            : document.getElementById('newKelas').value;
+          return {
+            newName: document.getElementById('newName').value,
+            newNoinfaq: document.getElementById('newNoinfaq').value,
+            newGuru,
+            newKelas
+          }
+        }
+      });
 
-            async function tampilkanStatistik() {
-                try {
-                    const { data, error } = await supabaseClient
-                        .from('santri')
-                        .select('NAMA, GURU, KELAS');
+      if (result.isConfirmed) {
+        const { newName, newNoinfaq, newGuru, newKelas } = result.value;
+        if (newName && newNoinfaq) {
+          try {
+            // Update tabel santri
+            const { error: santriError } = await supabaseClient
+              .from('santri')
+              .update({ NAMA: newName, NOINFAQ: newNoinfaq, GURU: newGuru, KELAS: newKelas })
+              .eq('id', id);
 
-                    if (error) throw error;
+            if (santriError) throw santriError;
 
-                    santriData = data;
-                    const jumlahSantri = santriData.length;
-                    const guruUnik = new Set(santriData.map(s => s.GURU));
-                    const jumlahGuru = guruUnik.size;
-                    const kelasUnik = new Set(santriData.map(s => `${s.GURU}-${s.KELAS}`));
-                    const jumlahKelas = kelasUnik.size;
+            // Update tabel absensi berdasarkan nama lama
+            const { error: absensiError } = await supabaseClient
+              .from('absensi')
+              .update({ nama: newName, guru: newGuru, kelas: newKelas })
+              .eq('nama', data.NAMA);
 
-                    document.getElementById('jumlahSantri').textContent = jumlahSantri;
-                    document.getElementById('jumlahGuru').textContent = jumlahGuru;
-                    document.getElementById('jumlahKelas').textContent = jumlahKelas;
+            if (absensiError) throw absensiError;
 
-                } catch (error) {
-                    console.error('Error mengambil data:', error);
-                    alert('Terjadi kesalahan saat mengambil data statistik.');
-                }
-            }
+            Swal.fire('Berhasil!', 'Data berhasil diupdate di tabel santri dan absensi!', 'success');
+            searchData(); // Refresh hasil pencarian
+          } catch (error) {
+            console.error("Error updating document: ", error);
+            Swal.fire('Error', 'Terjadi kesalahan saat mengupdate data. Silakan coba lagi.', 'error');
+          }
+        }
+      }
+    }
 
-            function tampilkanSebaranSantri() {
-                const sebaranSantri = {};
-                santriData.forEach(santri => {
-                    sebaranSantri[santri.GURU] = (sebaranSantri[santri.GURU] || 0) + 1;
-                });
+    // Function to delete data
+    async function deleteData(id) {
+      // Pertama, dapatkan nama siswa dari tabel santri
+      const { data: santriData, error: santriError } = await supabaseClient
+        .from('santri')
+        .select('NAMA')
+        .eq('id', id)
+        .single();
 
-                const totalSantri = santriData.length;
-                const sebaranList = document.getElementById('sebaranList');
-                sebaranList.innerHTML = '';
+      if (santriError) {
+        console.error("Error fetching santri data: ", santriError);
+        Swal.fire('Error', 'Terjadi kesalahan saat mengambil data santri. Silakan coba lagi.', 'error');
+        return;
+      }
 
-                for (const [guru, jumlah] of Object.entries(sebaranSantri)) {
-                    const persentase = ((jumlah / totalSantri) * 100).toFixed(1);
-                    const sebaranItem = document.createElement('div');
-                    sebaranItem.className = 'bg-gray-100 p-3 rounded';
-                    sebaranItem.innerHTML = `
-                        <p class="font-semibold">${guru}</p>
-                        <p>${jumlah} santri (${persentase}%)</p>
-                    `;
-                    sebaranList.appendChild(sebaranItem);
-                }
+      const confirmation = await Swal.fire({
+        title: 'Apakah Anda yakin?',
+        text: "Data akan dihapus dari tabel santri dan absensi!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya, hapus!',
+        cancelButtonText: 'Batal'
+      });
 
-                document.getElementById('sebaranSantri').classList.remove('hidden');
-            }
+      if (confirmation.isConfirmed) {
+        try {
+          // Hapus dari tabel santri
+          const { error: santriDeleteError } = await supabaseClient
+            .from('santri')
+            .delete()
+            .eq('id', id);
 
-            function tampilkanDaftarGuru() {
-                const guruKelas = {};
-                santriData.forEach(santri => {
-                    if (!guruKelas[santri.GURU]) {
-                        guruKelas[santri.GURU] = {};
-                    }
-                    if (!guruKelas[santri.GURU][santri.KELAS]) {
-                        guruKelas[santri.GURU][santri.KELAS] = 0;
-                    }
-                    guruKelas[santri.GURU][santri.KELAS]++;
-                });
+          if (santriDeleteError) throw santriDeleteError;
 
-                const guruList = document.getElementById('guruList');
-                guruList.innerHTML = '';
+          // Hapus dari tabel absensi berdasarkan nama
+          const { error: absensiError } = await supabaseClient
+            .from('absensi')
+            .delete()
+            .eq('nama', santriData.NAMA);
 
-                for (const [guru, kelas] of Object.entries(guruKelas)) {
-                    const guruItem = document.createElement('div');
-                    guruItem.className = 'bg-gray-100 p-3 rounded';
-                    
-                    const kelasInfo = Object.entries(kelas).map(([namaKelas, jumlahSantri]) => 
-                        `${namaKelas} (${jumlahSantri} santri)`
-                    ).join(' & ');
-                    
-                    guruItem.innerHTML = `
-                        <p class="font-semibold">${guru}</p>
-                        <p>Kelas: ${kelasInfo}</p>
-                    `;
-                    guruList.appendChild(guruItem);
-                }
+          if (absensiError) throw absensiError;
 
-                document.getElementById('daftarGuru').classList.remove('hidden');
-            }
+          Swal.fire('Terhapus!', 'Data telah dihapus dari tabel santri dan absensi.', 'success');
+          searchData(); // Refresh hasil pencarian
+        } catch (error) {
+          console.error("Error deleting document: ", error);
+          Swal.fire('Error', 'Terjadi kesalahan saat menghapus data. Silakan coba lagi.', 'error');
+        }
+      }
+    }
 
-            function tampilkanDaftarKelas() {
-                const kelasData = {};
-                santriData.forEach(santri => {
-                    const kelasKey = `${santri.GURU}-${santri.KELAS}`;
-                    if (!kelasData[kelasKey]) {
-                        kelasData[kelasKey] = { guru: santri.GURU, kelas: santri.KELAS, jumlahSantri: 0 };
-                    }
-                    kelasData[kelasKey].jumlahSantri++;
-                });
+    // Tambahkan fungsi berikut untuk mengatur hamburger menu
+    document.addEventListener('DOMContentLoaded', function() {
+      const menuToggle = document.getElementById('menu-toggle');
+      const mobileMenu = document.getElementById('mobile-menu');
 
-                const kelasList = document.getElementById('kelasList');
-                kelasList.innerHTML = '';
-
-                Object.values(kelasData).sort((a, b) => a.guru.localeCompare(b.guru) || a.kelas.localeCompare(b.kelas)).forEach(kelas => {
-                    const kelasItem = document.createElement('div');
-                    kelasItem.className = 'bg-gray-100 p-3 rounded';
-                    kelasItem.innerHTML = `
-                        <p class="font-semibold">${kelas.guru} - ${kelas.kelas}</p>
-                        <p>Jumlah Santri: ${kelas.jumlahSantri}</p>
-                    `;
-                    kelasList.appendChild(kelasItem);
-                });
-
-                document.getElementById('daftarKelas').classList.remove('hidden');
-            }
-
-            function tutupSebaranSantri() {
-                document.getElementById('sebaranSantri').classList.add('hidden');
-            }
-
-            function tutupDaftarGuru() {
-                document.getElementById('daftarGuru').classList.add('hidden');
-            }
-
-            function tutupDaftarKelas() {
-                document.getElementById('daftarKelas').classList.add('hidden');
-            }
-
-            document.getElementById('santriCard').addEventListener('click', function(event) {
-                event.stopPropagation();
-                tutupDaftarGuru();
-                tampilkanSebaranSantri();
-            });
-
-            document.getElementById('guruCard').addEventListener('click', function(event) {
-                event.stopPropagation();
-                tutupSebaranSantri();
-                tampilkanDaftarGuru();
-            });
-
-            document.getElementById('kelasCard').addEventListener('click', function(event) {
-                event.stopPropagation();
-                tutupSebaranSantri();
-                tutupDaftarGuru();
-                tampilkanDaftarKelas();
-            });
-
-            document.addEventListener('click', function(event) {
-                if (!event.target.closest('#sebaranSantri') && !event.target.closest('#santriCard') &&
-                    !event.target.closest('#daftarGuru') && !event.target.closest('#guruCard') &&
-                    !event.target.closest('#daftarKelas') && !event.target.closest('#kelasCard')) {
-                    tutupSebaranSantri();
-                    tutupDaftarGuru();
-                    tutupDaftarKelas();
-                }
-            });
-
-            tampilkanStatistik();
-        });
-    </script>
+      menuToggle.addEventListener('click', function() {
+        mobileMenu.classList.toggle('hidden');
+      });
+    });
+  </script>
 </body>
 </html>
