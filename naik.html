@@ -470,10 +470,13 @@
       max-width: 100%;
       margin: 0 auto;
       padding: 10px;
+      background-color: #f0f0f0;
     }
     h1 {
       text-align: center;
       font-size: 24px;
+      color: #333;
+      margin-bottom: 20px;
     }
     .filters {
       display: flex;
@@ -483,20 +486,40 @@
     }
     select, button {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
       font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      background-color: #fff;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #45a049;
     }
     table {
       width: 100%;
       border-collapse: collapse;
+      background-color: #fff;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      border-radius: 5px;
+      overflow: hidden;
     }
     th, td {
-      border: 1px solid #ddd;
-      padding: 8px;
+      padding: 12px;
       text-align: left;
       font-size: 14px;
     }
     th {
+      background-color: #4CAF50;
+      color: white;
+    }
+    tr:nth-child(even) {
       background-color: #f2f2f2;
     }
     
@@ -563,7 +586,7 @@
     .modal select,
     .modal input[type="text"] {
       width: 100%;
-      padding: 8px;
+      padding: 10px;
       margin-bottom: 15px;
       border: 1px solid #ddd;
       border-radius: 4px;
@@ -579,7 +602,7 @@
       background-color: #4CAF50;
       color: white;
       border: none;
-      padding: 10px 15px;
+      padding: 12px 15px;
       margin-right: 10px;
       border-radius: 4px;
       cursor: pointer;
@@ -601,6 +624,12 @@
     @media screen and (max-width: 480px) {
       .modal-content {
         width: 95%;
+      }
+      table {
+        font-size: 12px;
+      }
+      th, td {
+        padding: 8px;
       }
     }
   </style>
