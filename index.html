@@ -14,6 +14,9 @@
       background-color: #f0f4f8;
       color: #333;
       line-height: 1.6;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
     }
     .container {
       max-width: 1200px;
@@ -133,6 +136,16 @@
       td[data-label="Hapus"] {
         justify-content: center;
       }
+
+      td[data-label="Aksi"] {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+      }
+
+      td[data-label="Aksi"]:before {
+        display: none;
+      }
     }
     /* Tambahkan gaya berikut untuk form edit pada tampilan mobile */
     @media (max-width: 640px) {
@@ -163,9 +176,31 @@
         display: none;
       }
     }
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    footer {
+      margin-top: auto;
+    }
+    @media (max-width: 640px) {
+      body {
+        display: flex;
+        flex-direction: column;
+      }
+
+      main {
+        flex: 1 0 auto;
+      }
+
+      footer {
+        flex-shrink: 0;
+      }
+    }
   </style>
 </head>
-<body>
+<body class="flex flex-col min-h-screen">
   <header>
     <div class="container mx-auto px-4 py-6 flex items-center">
       <img src="img/logo.jpg" alt="Logo Rumah Tahfidz Saijaan" class="logo w-12 h-auto mr-1 max-w-xs" />
@@ -193,30 +228,30 @@
     </div>
   </header>
 
-  <div class="container">
-    <h2 class="text-3xl font-bold mb-6 text-center">Sistem Pencarian Data Siswa</h2>
-    <div class="search-container mb-8">
-      <label for="searchInput" class="block mb-2 font-semibold">Pencarian berdasarkan NAMA:</label>
-      <input type="text" id="searchInput" placeholder="Masukkan minimal 2 huruf" class="w-full p-3 rounded-lg shadow-sm" oninput="clearTimeout(searchTimeout); searchTimeout = setTimeout(searchData, 300)">
+  <main class="flex-grow">
+    <div class="container">
+      <h2 class="text-3xl font-bold mb-6 text-center">UPDATE DATA SANTRI</h2>
+      <div class="search-container mb-8">
+        <label for="searchInput" class="block mb-2 font-semibold">Cari Data Santri</label>
+        <input type="text" id="searchInput" placeholder="Masukkan minimal 2 huruf" class="w-full p-3 rounded-lg shadow-sm" oninput="clearTimeout(searchTimeout); searchTimeout = setTimeout(searchData, 300)">
+      </div>
+      
+      <div class="overflow-x-auto">
+        <table id="resultsTable" class="w-full bg-white rounded-lg overflow-hidden">
+          <thead class="bg-gray-800 text-white">
+            <tr>
+              <th class="py-3 px-4">NAMA</th>
+              <th class="py-3 px-4">NOINFAQ</th>
+              <th class="py-3 px-4">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Data akan diisi di sini -->
+          </tbody>
+        </table>
+      </div>
     </div>
-    
-    <h2 class="text-2xl font-semibold mb-4">Hasil Pencarian</h2>
-    <div class="overflow-x-auto">
-      <table id="resultsTable" class="w-full bg-white rounded-lg overflow-hidden">
-        <thead class="bg-gray-800 text-white">
-          <tr>
-            <th class="py-3 px-4">NAMA</th>
-            <th class="py-3 px-4">NOINFAQ</th>
-            <th class="py-3 px-4">Aksi</th>
-            <th class="py-3 px-4">Aksi</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Data will be populated here -->
-        </tbody>
-      </table>
-    </div>
-  </div>
+  </main>
 
   <footer>
     <div class="container mx-auto px-4 py-6">
@@ -276,23 +311,22 @@
             noinfaqCell.setAttribute('data-label', 'NOINFAQ');
             noinfaqCell.textContent = student.NOINFAQ;
 
-            // Edit button
-            const editCell = row.insertCell();
-            editCell.setAttribute('data-label', 'Edit');
+            // Aksi (Edit dan Hapus)
+            const actionCell = row.insertCell();
+            actionCell.setAttribute('data-label', 'Aksi');
+            
             const editButton = document.createElement('button');
             editButton.textContent = 'Edit';
-            editButton.className = 'edit-btn';
+            editButton.className = 'edit-btn mr-2';
             editButton.onclick = () => editData(student.id, student);
-            editCell.appendChild(editButton);
-
-            // Delete button
-            const deleteCell = row.insertCell();
-            deleteCell.setAttribute('data-label', 'Hapus');
+            
             const deleteButton = document.createElement('button');
             deleteButton.textContent = 'Hapus';
             deleteButton.className = 'delete-btn';
             deleteButton.onclick = () => deleteData(student.id);
-            deleteCell.appendChild(deleteButton);
+            
+            actionCell.appendChild(editButton);
+            actionCell.appendChild(deleteButton);
           });
         }
         console.log('Jumlah baris yang ditambahkan:', resultsTable.rows.length);
