@@ -61,11 +61,10 @@
       const selectedGuru = guruDropdown.value;
 
       kelasDropdown.innerHTML = '<option value="">Semua Kelas</option>';
+      kelasDropdown.disabled = selectedGuru === ""; // Nonaktifkan jika tidak ada guru yang dipilih
 
-      if (selectedGuru === "" || (selectedGuru && window.kelasPerGuru[selectedGuru])) {
-        const kelasSet = selectedGuru === "" ? 
-          new Set([].concat(...Object.values(window.kelasPerGuru))) : 
-          window.kelasPerGuru[selectedGuru];
+      if (selectedGuru && window.kelasPerGuru[selectedGuru]) {
+        const kelasSet = window.kelasPerGuru[selectedGuru];
 
         kelasSet.forEach(kelas => {
           if (kelas) {
@@ -131,11 +130,10 @@
       form.className = 'modal-content';
 
       form.innerHTML = `
-        <h2>Edit Data Santri</h2>
-        <p>Nama: ${santri.NAMA}</p>
-        <p>No. Infaq: ${santri.NOINFAQ}</p>
+        <h2>PINDAH KELAS SANTRI</h2>
+        <p style="text-align: center;">${santri.NAMA}</p>
+        <p style="text-align: center;">${santri.NOINFAQ}</p>
         
-        <label for="guruEdit">Guru:</label>
         <select id="guruEdit">
           <option value="">Pilih Guru</option>
           ${Array.from(window.guruSet).map(guru => `<option value="${guru}" ${guru === santri.GURU ? 'selected' : ''}>${guru}</option>`).join('')}
@@ -144,7 +142,6 @@
         <input type="text" id="guruEditNew" style="display:none;" placeholder="Masukkan nama guru baru">
         <br><br>
         
-        <label for="kelasEdit">Kelas:</label>
         <select id="kelasEdit">
           <option value="">Pilih Kelas</option>
           ${Array.from(window.kelasSet).map(kelas => `<option value="${kelas}" ${kelas === santri.KELAS ? 'selected' : ''}>${kelas}</option>`).join('')}
@@ -153,8 +150,8 @@
         <input type="text" id="kelasEditNew" style="display:none;" placeholder="Masukkan nama kelas baru">
         <br><br>
         
-        <button type="submit">Simpan</button>
-        <button type="button" onclick="this.closest('.modal').remove()">Batal</button>
+        <button type="submit" style="margin-bottom: 10px;">Simpan</button>
+        <button type="button" style="margin-bottom: 10px;" onclick="this.closest('.modal').remove()">Batal</button>
       `;
 
       form.onsubmit = async (e) => {
@@ -296,28 +293,28 @@
 
       content.innerHTML = `
         <h2>Riwayat Perpindahan Santri</h2>
-        <table>
+        <table style="width: 100%; border-collapse: collapse;">
           <thead>
-            <tr>
-              <th>Nama</th>
-              <th>No. Infaq</th>
-              <th>Guru Awal</th>
-              <th>Guru Baru</th>
-              <th>Kelas Awal</th>
-              <th>Kelas Baru</th>
-              <th>Aksi</th>
+            <tr style="background-color: #7f0404; color: white;">
+              <th style="padding: 10px; border: 1px solid #ddd;">Nama</th>
+              <th style="padding: 10px; border: 1px solid #ddd;">No. Infaq</th>
+              <th style="padding: 10px; border: 1px solid #ddd;">Guru Awal</th>
+              <th style="padding: 10px; border: 1px solid #ddd;">Guru Baru</th>
+              <th style="padding: 10px; border: 1px solid #ddd;">Kelas Awal</th>
+              <th style="padding: 10px; border: 1px solid #ddd;">Kelas Baru</th>
+              <th style="padding: 10px; border: 1px solid #ddd;">Aksi</th>
             </tr>
           </thead>
           <tbody>
             ${data.map(item => `
-              <tr>
-                <td>${item.nama}</td>
-                <td>${item.noinfaq}</td>
-                <td>${item.guru_awal}</td>
-                <td>${item.guru_baru}</td>
-                <td>${item.kelas_awal}</td>
-                <td>${item.kelas_baru}</td>
-                <td>
+              <tr style="border-bottom: 1px solid #ddd;">
+                <td style="padding: 10px; border: 1px solid #ddd;">${item.nama}</td>
+                <td style="padding: 10px; border: 1px solid #ddd;">${item.noinfaq}</td>
+                <td style="padding: 10px; border: 1px solid #ddd;">${item.guru_awal}</td>
+                <td style="padding: 10px; border: 1px solid #ddd;">${item.guru_baru}</td>
+                <td style="padding: 10px; border: 1px solid #ddd;">${item.kelas_awal}</td>
+                <td style="padding: 10px; border: 1px solid #ddd;">${item.kelas_baru}</td>
+                <td style="padding: 10px; border: 1px solid #ddd;">
                   <button onclick="editRiwayat(${item.id})">Edit</button>
                   <button onclick="hapusRiwayat(${item.id})">Hapus</button>
                 </td>
@@ -325,8 +322,8 @@
             `).join('')}
           </tbody>
         </table>
-        <button onclick="closeModal(this)">Tutup</button>
-        <button onclick="downloadRiwayatPerpindahan()">Unduh Data</button>
+        <button onclick="closeModal(this)" style="margin-top: 20px;">Tutup</button>
+        <button onclick="downloadRiwayatPerpindahan()" style="margin-top: 20px;">Unduh Data</button>
       `;
 
       modal.appendChild(content);
@@ -341,14 +338,20 @@
     function downloadRiwayatPerpindahan() {
       const table = document.querySelector('table');
       const csv = [];
-      for (const row of table.rows) {
-        const cells = row.cells;
+      
+      // Tambahkan header CSV
+      csv.push('Nama,No. Infaq,Guru Awal,Guru Baru,Kelas Awal,Kelas Baru');
+      
+      // Iterasi setiap baris tabel, mulai dari baris kedua (indeks 1) untuk melewati header tabel
+      for (let i = 1; i < table.rows.length; i++) {
+        const cells = table.rows[i].cells;
         const csvRow = [];
-        for (const cell of cells) {
-          csvRow.push(cell.innerText);
+        for (let j = 0; j < cells.length - 1; j++) { // -1 untuk melewati kolom aksi
+          csvRow.push(cells[j].innerText);
         }
         csv.push(csvRow.join(','));
       }
+      
       const csvContent = csv.join('\n');
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement('a');
@@ -462,6 +465,22 @@
       }
     }
 
+    function filterByName() {
+      const input = document.getElementById('searchInput').value.toLowerCase();
+      const tableBody = document.getElementById('santriTableBody');
+      const rows = tableBody.getElementsByTagName('tr');
+
+      for (let i = 0; i < rows.length; i++) {
+        const cells = rows[i].getElementsByTagName('td');
+        const nameCell = cells[1] || null; // Kolom Nama
+
+        if (nameCell) {
+          const name = nameCell.textContent || nameCell.innerText;
+          rows[i].style.display = name.toLowerCase().includes(input) ? '' : 'none';
+        }
+      }
+    }
+
     window.onload = loadData;
   </script>
   <style>
@@ -494,13 +513,13 @@
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
     button {
-      background-color: #4CAF50;
+      background-color: #7f0404;
       color: white;
       cursor: pointer;
       transition: background-color 0.3s;
     }
     button:hover {
-      background-color: #45a049;
+      background-color: #7f0404;
     }
     table {
       width: 100%;
@@ -516,7 +535,7 @@
       font-size: 14px;
     }
     th {
-      background-color: #4CAF50;
+      background-color: #7f0404;
       color: white;
     }
     tr:nth-child(even) {
@@ -637,10 +656,11 @@
 <body>
   <h1>PERPINDAHAN KELAS SANTRI</h1>
   <div class="filters">
+    <input type="text" id="searchInput" placeholder="Cari Nama Santri" oninput="filterByName()">
     <select id="guruFilter" onchange="updateKelasDropdown(); filterData();">
       <option value="">Semua Guru</option>
     </select>
-    <select id="kelasFilter" onchange="filterData()">
+    <select id="kelasFilter" onchange="filterData()" disabled>
       <option value="">Semua Kelas</option>
     </select>
     <button onclick="viewRiwayatPerpindahan()">Lihat Riwayat Perpindahan</button>
