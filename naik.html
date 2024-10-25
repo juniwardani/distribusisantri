@@ -59,6 +59,14 @@
       const guruDropdown = document.getElementById('guruFilter');
       const kelasDropdown = document.getElementById('kelasFilter');
       const selectedGuru = guruDropdown.value;
+      const selectedKelas = kelasDropdown.value;
+
+      // Simpan opsi yang ada sebelumnya
+      const previousOptions = Array.from(kelasDropdown.options).map(option => ({
+        value: option.value,
+        text: option.text,
+        selected: option.selected
+      }));
 
       kelasDropdown.innerHTML = '<option value="">Semua Kelas</option>';
       kelasDropdown.disabled = selectedGuru === ""; // Nonaktifkan jika tidak ada guru yang dipilih
@@ -71,9 +79,24 @@
             const option = document.createElement('option');
             option.value = kelas;
             option.textContent = kelas;
+            if (kelas === selectedKelas) {
+              option.selected = true;
+            }
             kelasDropdown.appendChild(option);
           }
         });
+      }
+
+      // Tambahkan kembali opsi yang sebelumnya dipilih jika tidak ada dalam daftar baru
+      if (selectedKelas && !kelasDropdown.querySelector(`option[value="${selectedKelas}"]`)) {
+        const previousSelectedOption = previousOptions.find(opt => opt.value === selectedKelas);
+        if (previousSelectedOption) {
+          const option = document.createElement('option');
+          option.value = previousSelectedOption.value;
+          option.textContent = previousSelectedOption.text;
+          option.selected = true;
+          kelasDropdown.appendChild(option);
+        }
       }
     }
 
@@ -235,7 +258,15 @@
 
           alert('Data santri berhasil diperbarui');
           modal.remove();
-          await loadData();
+          
+          // Perbarui data santri di tabel
+          const updatedSantri = { ...santri, GURU: guru, KELAS: kelas };
+          updateSantriInTable(updatedSantri);
+          
+          // Perbarui filter dropdown
+          await updateFilterDropdowns();
+          
+          // Jalankan filterData untuk memastikan tampilan tabel sesuai dengan filter yang aktif
           await filterData();
         } catch (error) {
           console.error('Error updating santri:', error);
@@ -254,6 +285,102 @@
       document.getElementById('kelasEdit').addEventListener('change', function() {
         document.getElementById('kelasEditNew').style.display = this.value === 'new' ? 'block' : 'none';
       });
+    }
+
+    function updateSantriInTable(updatedSantri) {
+      const guru = document.getElementById('guruFilter').value;
+      const kelas = document.getElementById('kelasFilter').value;
+
+      // Jika filter aktif dan santri tidak lagi cocok dengan filter, hapus dari tabel
+      if ((guru && updatedSantri.GURU !== guru) || (kelas && updatedSantri.KELAS !== kelas)) {
+        const tableBody = document.getElementById('santriTableBody');
+        const rows = tableBody.getElementsByTagName('tr');
+        for (let i = 0; i < rows.length; i++) {
+          const cells = rows[i].getElementsByTagName('td');
+          if (cells[1].textContent === updatedSantri.NAMA && cells[2].textContent === updatedSantri.NOINFAQ) {
+            tableBody.removeChild(rows[i]);
+            break;
+          }
+        }
+      } else {
+        // Jika santri masih cocok dengan filter atau tidak ada filter, perbarui baris
+        const tableBody = document.getElementById('santriTableBody');
+        const rows = tableBody.getElementsByTagName('tr');
+        let found = false;
+        for (let i = 0; i < rows.length; i++) {
+          const cells = rows[i].getElementsByTagName('td');
+          if (cells[1].textContent === updatedSantri.NAMA && cells[2].textContent === updatedSantri.NOINFAQ) {
+            cells[1].textContent = updatedSantri.NAMA;
+            cells[2].textContent = updatedSantri.NOINFAQ;
+            found = true;
+            break;
+          }
+        }
+        // Jika santri tidak ditemukan di tabel (mungkin karena filter sebelumnya), tambahkan baris baru
+        if (!found) {
+          const newRow = tableBody.insertRow();
+          newRow.insertCell(0).textContent = tableBody.rows.length;
+          newRow.insertCell(1).textContent = updatedSantri.NAMA;
+          newRow.insertCell(2).textContent = updatedSantri.NOINFAQ;
+          const actionCell = newRow.insertCell(3);
+          const editButton = document.createElement('button');
+          editButton.textContent = 'Edit';
+          editButton.onclick = () => editSantri(updatedSantri);
+          actionCell.appendChild(editButton);
+        }
+      }
+    }
+
+    async function updateFilterDropdowns() {
+      const { data: santriData, error: santriError } = await supabaseClient
+        .from('santri')
+        .select('GURU, KELAS');
+
+      if (santriError) throw santriError;
+
+      // Perbarui set guru dan kelas
+      window.guruSet = new Set(santriData.map(item => item.GURU));
+      window.kelasSet = new Set(santriData.map(item => item.KELAS));
+
+      // Perbarui dropdown guru
+      const guruDropdown = document.getElementById('guruFilter');
+      const selectedGuru = guruDropdown.value;
+      const previousGuruOptions = Array.from(guruDropdown.options);
+      
+      guruDropdown.innerHTML = '<option value="">Semua Guru</option>';
+      window.guruSet.forEach(guru => {
+        if (guru) {
+          const option = document.createElement('option');
+          option.value = guru;
+          option.textContent = guru;
+          if (guru === selectedGuru) option.selected = true;
+          guruDropdown.appendChild(option);
+        }
+      });
+
+      // Tambahkan kembali guru yang sebelumnya dipilih jika tidak ada dalam daftar baru
+      if (selectedGuru && !guruDropdown.querySelector(`option[value="${selectedGuru}"]`)) {
+        const previousSelectedOption = previousGuruOptions.find(opt => opt.value === selectedGuru);
+        if (previousSelectedOption) {
+          const option = document.createElement('option');
+          option.value = previousSelectedOption.value;
+          option.textContent = previousSelectedOption.textContent;
+          option.selected = true;
+          guruDropdown.appendChild(option);
+        }
+      }
+
+      // Perbarui data kelas berdasarkan guru
+      window.kelasPerGuru = {};
+      santriData.forEach(item => {
+        if (!window.kelasPerGuru[item.GURU]) {
+          window.kelasPerGuru[item.GURU] = new Set();
+        }
+        window.kelasPerGuru[item.GURU].add(item.KELAS);
+      });
+
+      // Perbarui dropdown kelas
+      updateKelasDropdown();
     }
 
     async function viewRiwayatPerpindahan() {
@@ -335,34 +462,56 @@
       document.body.removeChild(modal);
     }
 
-    function downloadRiwayatPerpindahan() {
-      const table = document.querySelector('table');
-      const csv = [];
-      
-      // Tambahkan header CSV
-      csv.push('Nama,No. Infaq,Guru Awal,Guru Baru,Kelas Awal,Kelas Baru');
-      
-      // Iterasi setiap baris tabel, mulai dari baris kedua (indeks 1) untuk melewati header tabel
-      for (let i = 1; i < table.rows.length; i++) {
-        const cells = table.rows[i].cells;
-        const csvRow = [];
-        for (let j = 0; j < cells.length - 1; j++) { // -1 untuk melewati kolom aksi
-          csvRow.push(cells[j].innerText);
+    async function downloadRiwayatPerpindahan() {
+      try {
+        // Ambil data terbaru dari Supabase
+        const { data, error } = await supabaseClient
+          .from('riwayat_perpindahan')
+          .select('*');
+
+        if (error) throw error;
+
+        // Buat header CSV
+        const csvHeader = ['Nama', 'No. Infaq', 'Guru Awal', 'Guru Baru', 'Kelas Awal', 'Kelas Baru', 'Tanggal Unduhan'];
+        const csvRows = [csvHeader.join(',')];
+
+        // Konversi data ke format CSV
+        const currentDate = new Date().toLocaleString('id-ID');
+        data.forEach(item => {
+          const row = [
+            item.nama || '',
+            item.noinfaq || '',
+            item.guru_awal || '',
+            item.guru_baru || '',
+            item.kelas_awal || '',
+            item.kelas_baru || '',
+            currentDate
+          ].map(value => `"${value}"`).join(',');
+          csvRows.push(row);
+        });
+
+        // Gabungkan semua baris CSV
+        const csvContent = csvRows.join('\n');
+
+        // Buat dan unduh file CSV
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        if (link.download !== undefined) {
+          const url = URL.createObjectURL(blob);
+          link.setAttribute('href', url);
+          link.setAttribute('download', `riwayat_perpindahan_${new Date().toISOString().split('T')[0]}.csv`);
+          link.style.visibility = 'hidden';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
         }
-        csv.push(csvRow.join(','));
-      }
-      
-      const csvContent = csv.join('\n');
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement('a');
-      if (link.download !== undefined) {
-        const url = URL.createObjectURL(blob);
-        link.setAttribute('href', url);
-        link.setAttribute('download', 'riwayat_perpindahan.csv');
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+      } catch (error) {
+        console.error('Error downloading riwayat perpindahan:', error);
+        if (error.message) {
+          alert(`Terjadi kesalahan: ${error.message}`);
+        } else {
+          alert('Terjadi kesalahan yang tidak diketahui saat mengunduh data. Silakan coba lagi.');
+        }
       }
     }
 
@@ -412,6 +561,11 @@
 
         form.onsubmit = async (e) => {
           e.preventDefault();
+          
+          if (!confirm('Apakah Anda yakin ingin menyimpan perubahan ini?')) {
+            return;
+          }
+
           const updatedData = {
             nama: document.getElementById('nama').value,
             noinfaq: document.getElementById('noinfaq').value,
@@ -421,20 +575,43 @@
             kelas_baru: document.getElementById('kelas_baru').value,
           };
 
+          console.log('Data yang akan diperbarui:', updatedData);
+
           try {
-            const { error } = await supabaseClient
+            // Update riwayat_perpindahan
+            const { error: riwayatError } = await supabaseClient
               .from('riwayat_perpindahan')
               .update(updatedData)
               .eq('id', id);
 
-            if (error) throw error;
+            if (riwayatError) throw riwayatError;
 
-            alert('Data riwayat berhasil diperbarui');
+            console.log('Riwayat berhasil diperbarui di Supabase');
+
+            // Update santri
+            const { error: santriError } = await supabaseClient
+              .from('santri')
+              .update({
+                NAMA: updatedData.nama,
+                NOINFAQ: updatedData.noinfaq,
+                AWAL: updatedData.guru_awal,
+                GURU: updatedData.guru_baru,
+                KELAS: updatedData.kelas_baru
+              })
+              .eq('NOINFAQ', updatedData.noinfaq);
+
+            if (santriError) throw santriError;
+
+            console.log('Santri berhasil diperbarui di Supabase');
+
+            alert('Data riwayat dan santri berhasil diperbarui');
             modal.remove();
             viewRiwayatPerpindahan();
+            await updateFilterDropdowns();
+            await filterData();
           } catch (error) {
-            console.error('Error updating riwayat:', error);
-            alert('Terjadi kesalahan saat memperbarui data riwayat. Silakan coba lagi.');
+            console.error('Error updating riwayat and santri:', error);
+            alert('Terjadi kesalahan saat memperbarui data riwayat dan santri. Silakan coba lagi.');
           }
         };
 
