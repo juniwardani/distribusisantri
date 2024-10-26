@@ -95,70 +95,187 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      max-width: 500px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-    h1 {
-      text-align: center;
-    }
-    form {
+      margin: 0;
+      padding: 0;
       display: flex;
       flex-direction: column;
+      min-height: 100vh;
     }
+
+    main {
+      flex-grow: 1;
+      padding: 20px 0;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .header, .footer {
+      background-color: #6b0f0f;
+      color: white;
+    }
+
+    .header {
+      padding: 15px 0;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .footer {
+      margin-top: auto;
+      padding: 20px 0;
+      text-align: center;
+    }
+
+    /* Gaya baru untuk header */
+    .header .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo-title {
+      display: flex;
+      align-items: center;
+    }
+
+    .logo {
+      width: 50px;
+      height: auto;
+      margin-right: 15px;
+    }
+
+    .logo-title h1 {
+      font-size: 1.5rem;
+      margin: 0;
+      font-weight: bold;
+      color: white; /* Pastikan warna teks terlihat */
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 20px;
+    }
+
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      transition: opacity 0.3s;
+    }
+
+    .nav-links a:hover {
+      opacity: 0.8;
+    }
+
+    /* Gaya untuk form */
+    form {
+      background-color: #f9f9f9;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      text-align: center;
+      color: #6b0f0f;
+      margin-bottom: 30px;
+    }
+
     label {
-      margin-top: 10px;
+      font-weight: bold;
+      margin-bottom: 8px;
+      display: block;
+      color: #333;
     }
+
     input, select {
-      padding: 8px;
-      margin-bottom: 10px;
-      border: 1px solid #ccc;
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 20px;
+      border: 1px solid #ddd;
       border-radius: 4px;
       font-size: 16px;
+      box-sizing: border-box;
     }
-    select {
-      appearance: none;
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
-      background-repeat: no-repeat;
-      background-position-x: 98%;
-      background-position-y: 50%;
-    }
+
     button {
-      padding: 10px;
-      background-color: #4CAF50;
+      width: 100%;
+      padding: 14px;
+      background-color: #6b0f0f;
       color: white;
       border: none;
       border-radius: 4px;
       cursor: pointer;
-      font-size: 16px;
+      font-size: 18px;
+      font-weight: bold;
+      transition: background-color 0.3s;
     }
+
     button:hover {
-      background-color: #45a049;
+      background-color: #8b1f1f;
+    }
+
+    @media (max-width: 768px) {
+      .header .container {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .nav-links {
+        margin-top: 15px;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>Tambah Santri Baru</h1>
-  <form id="formTambahSantri">
-    <label for="nama">Nama:</label>
-    <input type="text" id="nama" required>
+  <header class="header">
+    <div class="container">
+      <div class="logo-title">
+        <img src="img/logo.jpg" alt="Logo Rumah Tahfidz Saijaan" class="logo">
+        <h1>Rumah Tahfidz Saijaan</h1>
+      </div>
+      <nav class="nav-links" id="nav-links">
+        <a href="index.html">Beranda</a>
+        <a href="naik.html">Kenaikan Kelas</a>
+        <a href="tambah.html">Tambah Santri</a>
+      </nav>
+    </div>
+  </header>
 
-    <label for="guru">Pembimbing</label>
-    <select id="guru" required>
-      <option value="">Pilih Guru</option>
-    </select>
+  <main>
+    <div class="container">
+      <h1>Tambah Santri Baru</h1>
+      <form id="formTambahSantri">
+        <label for="nama">Nama:</label>
+        <input type="text" id="nama" required>
 
-    <label for="noinfaq">No. Infaq:</label>
-    <input type="text" id="noinfaq" required>
+        <label for="guru">Pembimbing:</label>
+        <select id="guru" required>
+          <option value="">Pilih Guru</option>
+        </select>
 
-    <label for="kelas">Kelas:</label>
-    <select id="kelas" required>
-      <option value="">Pilih Kelas</option>
-    </select>
+        <label for="noinfaq">No. Infaq:</label>
+        <input type="text" id="noinfaq" required>
 
-    <button type="button" onclick="tambahSantri()">Tambah Santri</button>
-  </form>
+        <label for="kelas">Kelas:</label>
+        <select id="kelas" required>
+          <option value="">Pilih Kelas</option>
+        </select>
+
+        <button type="button" onclick="tambahSantri()">Tambah Santri</button>
+      </form>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2024 Rumah Tahfidz Saijaan. Hak Cipta Dilindungi.</p>
+    </div>
+  </footer>
 </body>
 </html>
