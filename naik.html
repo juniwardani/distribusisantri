@@ -538,6 +538,14 @@
         form.style.padding = '20px';
         form.style.borderRadius = '5px';
 
+        // Buat opsi untuk dropdown guru dan kelas
+        const guruOptions = Array.from(window.guruSet).map(guru => 
+          `<option value="${guru}">${guru}</option>`
+        ).join('');
+        const kelasOptions = Array.from(window.kelasSet).map(kelas => 
+          `<option value="${kelas}">${kelas}</option>`
+        ).join('');
+
         form.innerHTML = `
           <h2>Edit Riwayat Perpindahan</h2>
           <label for="nama">Nama:</label>
@@ -545,16 +553,36 @@
           <label for="noinfaq">No. Infaq:</label>
           <input type="text" id="noinfaq" value="${data.noinfaq}" required><br><br>
           <label for="guru_awal">Guru Awal:</label>
-          <input type="text" id="guru_awal" value="${data.guru_awal}" required><br><br>
+          <select id="guru_awal" required>
+            <option value="">Pilih Guru Awal</option>
+            ${guruOptions}
+          </select><br><br>
           <label for="guru_baru">Guru Baru:</label>
-          <input type="text" id="guru_baru" value="${data.guru_baru}" required><br><br>
+          <select id="guru_baru" required>
+            <option value="">Pilih Guru Baru</option>
+            ${guruOptions}
+          </select><br><br>
           <label for="kelas_awal">Kelas Awal:</label>
-          <input type="text" id="kelas_awal" value="${data.kelas_awal}" required><br><br>
+          <select id="kelas_awal" required>
+            <option value="">Pilih Kelas Awal</option>
+            ${kelasOptions}
+          </select><br><br>
           <label for="kelas_baru">Kelas Baru:</label>
-          <input type="text" id="kelas_baru" value="${data.kelas_baru}" required><br><br>
+          <select id="kelas_baru" required>
+            <option value="">Pilih Kelas Baru</option>
+            ${kelasOptions}
+          </select><br><br>
           <button type="submit">Simpan</button>
           <button type="button" onclick="this.closest('div').remove()">Batal</button>
         `;
+
+        // Set nilai awal untuk dropdown
+        setTimeout(() => {
+          document.getElementById('guru_awal').value = data.guru_awal;
+          document.getElementById('guru_baru').value = data.guru_baru;
+          document.getElementById('kelas_awal').value = data.kelas_awal;
+          document.getElementById('kelas_baru').value = data.kelas_baru;
+        }, 0);
 
         form.onsubmit = async (e) => {
           e.preventDefault();
