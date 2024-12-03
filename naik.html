@@ -51,7 +51,7 @@
         await filterData();
       } catch (error) {
         console.error('Error loading data:', error);
-        showCustomAlert('Terjadi kesalahan saat memuat data. Silakan coba lagi.', 'error');
+        alert('Terjadi kesalahan saat memuat data. Silakan coba lagi.');
       }
     }
 
@@ -123,7 +123,7 @@
         displayData(data);
       } catch (error) {
         console.error('Error filtering data:', error);
-        showCustomAlert('Terjadi kesalahan saat memfilter data. Silakan coba lagi.', 'error');
+        alert('Terjadi kesalahan saat memfilter data. Silakan coba lagi.');
       }
     }
 
@@ -185,22 +185,22 @@
         if (guru === 'new') {
           guru = document.getElementById('guruEditNew').value;
           if (!guru) {
-            showCustomAlert('Silakan masukkan nama guru baru', 'error');
+            alert('Silakan masukkan nama guru baru');
             return;
           }
         } else if (!guru) {
-          showCustomAlert('Silakan pilih guru', 'error');
+          alert('Silakan pilih guru');
           return;
         }
         
         if (kelas === 'new') {
           kelas = document.getElementById('kelasEditNew').value;
           if (!kelas) {
-            showCustomAlert('Silakan masukkan nama kelas baru', 'error');
+            alert('Silakan masukkan nama kelas baru');
             return;
           }
         } else if (!kelas) {
-          showCustomAlert('Silakan pilih kelas', 'error');
+          alert('Silakan pilih kelas');
           return;
         }
 
@@ -256,7 +256,15 @@
 
           if (error) throw error;
 
-          showCustomAlert('Data santri berhasil diperbarui', 'success');
+          // Update data di tabel absensi berdasarkan nama santri
+          const { data: absensiData, error: absensiError } = await supabaseClient
+            .from('absensi')
+            .update({ guru: guru, kelas: kelas })
+            .eq('nama', santri.NAMA);
+
+          if (absensiError) throw absensiError;
+
+          alert('Data santri berhasil diperbarui di tabel santri dan absensi');
           modal.remove();
           
           // Perbarui data santri di tabel
@@ -270,7 +278,7 @@
           await filterData();
         } catch (error) {
           console.error('Error updating santri:', error);
-          showCustomAlert('Terjadi kesalahan saat memperbarui data santri. Silakan coba lagi.', 'error');
+          alert('Terjadi kesalahan saat memperbarui data santri. Silakan coba lagi.');
         }
       };
 
@@ -394,54 +402,63 @@
         displayRiwayatPerpindahan(data);
       } catch (error) {
         console.error('Error fetching riwayat perpindahan:', error);
-        showCustomAlert('Terjadi kesalahan saat mengambil data riwayat perpindahan. Silakan coba lagi.', 'error');
+        alert('Terjadi kesalahan saat mengambil data riwayat perpindahan. Silakan coba lagi.');
       }
     }
 
     function displayRiwayatPerpindahan(data) {
       const modal = document.createElement('div');
-      modal.className = 'riwayat-modal';
+      modal.style.position = 'fixed';
+      modal.style.left = '0';
+      modal.style.top = '0';
+      modal.style.width = '100%';
+      modal.style.height = '100%';
+      modal.style.backgroundColor = 'rgba(0,0,0,0.5)';
+      modal.style.display = 'flex';
+      modal.style.justifyContent = 'center';
+      modal.style.alignItems = 'center';
 
       const content = document.createElement('div');
-      content.className = 'riwayat-content';
+      content.style.backgroundColor = 'white';
+      content.style.padding = '20px';
+      content.style.borderRadius = '5px';
+      content.style.maxWidth = '80%';
+      content.style.maxHeight = '80%';
+      content.style.overflow = 'auto';
 
       content.innerHTML = `
         <h2>Riwayat Perpindahan Santri</h2>
-        <div style="overflow-x: auto;">
-          <table class="riwayat-table">
-            <thead>
-              <tr>
-                <th>Nama</th>
-                <th>No. Infaq</th>
-                <th>Guru Awal</th>
-                <th>Guru Baru</th>
-                <th>Kelas Awal</th>
-                <th>Kelas Baru</th>
-                <th>Aksi</th>
+        <table style="width: 100%; border-collapse: collapse;">
+          <thead>
+            <tr style="background-color: #7f0404; color: white;">
+              <th style="padding: 10px; border: 1px solid #ddd;">Nama</th>
+              <th style="padding: 10px; border: 1px solid #ddd;">No. Infaq</th>
+              <th style="padding: 10px; border: 1px solid #ddd;">Guru Awal</th>
+              <th style="padding: 10px; border: 1px solid #ddd;">Guru Baru</th>
+              <th style="padding: 10px; border: 1px solid #ddd;">Kelas Awal</th>
+              <th style="padding: 10px; border: 1px solid #ddd;">Kelas Baru</th>
+              <th style="padding: 10px; border: 1px solid #ddd;">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${data.map(item => `
+              <tr style="border-bottom: 1px solid #ddd;">
+                <td style="padding: 10px; border: 1px solid #ddd;">${item.nama}</td>
+                <td style="padding: 10px; border: 1px solid #ddd;">${item.noinfaq}</td>
+                <td style="padding: 10px; border: 1px solid #ddd;">${item.guru_awal}</td>
+                <td style="padding: 10px; border: 1px solid #ddd;">${item.guru_baru}</td>
+                <td style="padding: 10px; border: 1px solid #ddd;">${item.kelas_awal}</td>
+                <td style="padding: 10px; border: 1px solid #ddd;">${item.kelas_baru}</td>
+                <td style="padding: 10px; border: 1px solid #ddd;">
+                  <button onclick="editRiwayat(${item.id})">Edit</button>
+                  <button onclick="hapusRiwayat(${item.id})">Hapus</button>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              ${data.map(item => `
-                <tr>
-                  <td>${item.nama}</td>
-                  <td>${item.noinfaq}</td>
-                  <td>${item.guru_awal}</td>
-                  <td>${item.guru_baru}</td>
-                  <td>${item.kelas_awal}</td>
-                  <td>${item.kelas_baru}</td>
-                  <td>
-                    <button onclick="editRiwayat(${item.id})">Edit</button>
-                    <button onclick="hapusRiwayat(${item.id})">Hapus</button>
-                  </td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-        </div>
-        <div class="riwayat-buttons">
-          <button onclick="closeModal(this)">Tutup</button>
-          <button onclick="downloadRiwayatPerpindahan()">Unduh Data</button>
-        </div>
+            `).join('')}
+          </tbody>
+        </table>
+        <button onclick="closeModal(this)" style="margin-top: 20px;">Tutup</button>
+        <button onclick="downloadRiwayatPerpindahan()" style="margin-top: 20px;">Unduh Data</button>
       `;
 
       modal.appendChild(content);
@@ -449,10 +466,8 @@
     }
 
     function closeModal(button) {
-      const modal = button.closest('.riwayat-modal');
-      if (modal) {
-        document.body.removeChild(modal);
-      }
+      const modal = button.closest('div').parentNode;
+      document.body.removeChild(modal);
     }
 
     async function downloadRiwayatPerpindahan() {
@@ -501,9 +516,9 @@
       } catch (error) {
         console.error('Error downloading riwayat perpindahan:', error);
         if (error.message) {
-          showCustomAlert(`Terjadi kesalahan: ${error.message}`, 'error');
+          alert(`Terjadi kesalahan: ${error.message}`);
         } else {
-          showCustomAlert('Terjadi kesalahan yang tidak diketahui saat mengunduh data. Silakan coba lagi.', 'error');
+          alert('Terjadi kesalahan yang tidak diketahui saat mengunduh data. Silakan coba lagi.');
         }
       }
     }
@@ -518,10 +533,6 @@
 
         if (error) throw error;
 
-        // Tutup modal riwayat perpindahan
-        closeRiwayatModal();
-
-        // Buat modal edit baru
         const modal = document.createElement('div');
         modal.style.position = 'fixed';
         modal.style.left = '0';
@@ -538,14 +549,6 @@
         form.style.padding = '20px';
         form.style.borderRadius = '5px';
 
-        // Buat opsi untuk dropdown guru dan kelas
-        const guruOptions = Array.from(window.guruSet).map(guru => 
-          `<option value="${guru}">${guru}</option>`
-        ).join('');
-        const kelasOptions = Array.from(window.kelasSet).map(kelas => 
-          `<option value="${kelas}">${kelas}</option>`
-        ).join('');
-
         form.innerHTML = `
           <h2>Edit Riwayat Perpindahan</h2>
           <label for="nama">Nama:</label>
@@ -553,36 +556,16 @@
           <label for="noinfaq">No. Infaq:</label>
           <input type="text" id="noinfaq" value="${data.noinfaq}" required><br><br>
           <label for="guru_awal">Guru Awal:</label>
-          <select id="guru_awal" required>
-            <option value="">Pilih Guru Awal</option>
-            ${guruOptions}
-          </select><br><br>
+          <input type="text" id="guru_awal" value="${data.guru_awal}" required><br><br>
           <label for="guru_baru">Guru Baru:</label>
-          <select id="guru_baru" required>
-            <option value="">Pilih Guru Baru</option>
-            ${guruOptions}
-          </select><br><br>
+          <input type="text" id="guru_baru" value="${data.guru_baru}" required><br><br>
           <label for="kelas_awal">Kelas Awal:</label>
-          <select id="kelas_awal" required>
-            <option value="">Pilih Kelas Awal</option>
-            ${kelasOptions}
-          </select><br><br>
+          <input type="text" id="kelas_awal" value="${data.kelas_awal}" required><br><br>
           <label for="kelas_baru">Kelas Baru:</label>
-          <select id="kelas_baru" required>
-            <option value="">Pilih Kelas Baru</option>
-            ${kelasOptions}
-          </select><br><br>
+          <input type="text" id="kelas_baru" value="${data.kelas_baru}" required><br><br>
           <button type="submit">Simpan</button>
           <button type="button" onclick="this.closest('div').remove()">Batal</button>
         `;
-
-        // Set nilai awal untuk dropdown
-        setTimeout(() => {
-          document.getElementById('guru_awal').value = data.guru_awal;
-          document.getElementById('guru_baru').value = data.guru_baru;
-          document.getElementById('kelas_awal').value = data.kelas_awal;
-          document.getElementById('kelas_baru').value = data.kelas_baru;
-        }, 0);
 
         form.onsubmit = async (e) => {
           e.preventDefault();
@@ -627,24 +610,35 @@
 
             if (santriError) throw santriError;
 
-            console.log('Santri berhasil diperbarui di Supabase');
+            // Update data di tabel absensi berdasarkan nama santri
+            const { error: absensiError } = await supabaseClient
+              .from('absensi')
+              .update({
+                guru: updatedData.guru_baru,
+                kelas: updatedData.kelas_baru
+              })
+              .eq('nama', updatedData.nama);
 
-            showCustomAlert('Data riwayat dan santri berhasil diperbarui', 'success');
+            if (absensiError) throw absensiError;
+
+            console.log('Santri dan absensi berhasil diperbarui di Supabase');
+
+            alert('Data riwayat, santri, dan absensi berhasil diperbarui');
             modal.remove();
             viewRiwayatPerpindahan();
             await updateFilterDropdowns();
             await filterData();
           } catch (error) {
             console.error('Error updating riwayat and santri:', error);
-            showCustomAlert('Terjadi kesalahan saat memperbarui data riwayat dan santri. Silakan coba lagi.', 'error');
+            alert('Terjadi kesalahan saat memperbarui data riwayat dan santri. Silakan coba lagi.');
           }
         };
 
         modal.appendChild(form);
         document.body.appendChild(modal);
       } catch (error) {
-        console.error('Error editing riwayat:', error);
-        showCustomAlert('Terjadi kesalahan saat mengedit riwayat. Silakan coba lagi.', 'error');
+        console.error('Error fetching riwayat data:', error);
+        alert('Terjadi kesalahan saat mengambil data riwayat. Silakan coba lagi.');
       }
     }
 
@@ -658,24 +652,12 @@
 
           if (error) throw error;
 
-          showCustomAlert('Riwayat berhasil dihapus', 'success');
-          
-          // Tutup modal riwayat perpindahan
-          closeRiwayatModal();
-          
-          // Muat ulang data riwayat
-          await viewRiwayatPerpindahan();
+          alert('Data riwayat berhasil dihapus');
+          viewRiwayatPerpindahan();
         } catch (error) {
           console.error('Error deleting riwayat:', error);
-          showCustomAlert('Terjadi kesalahan saat menghapus riwayat. Silakan coba lagi.', 'error');
+          alert('Terjadi kesalahan saat menghapus data riwayat. Silakan coba lagi.');
         }
-      }
-    }
-
-    function closeRiwayatModal() {
-      const modal = document.querySelector('.riwayat-modal');
-      if (modal) {
-        document.body.removeChild(modal);
       }
     }
 
@@ -693,27 +675,6 @@
           rows[i].style.display = name.toLowerCase().includes(input) ? '' : 'none';
         }
       }
-    }
-
-    // Fungsi untuk menampilkan alert kustom
-    function showCustomAlert(message, type = 'error') {
-      const alertElement = document.createElement('div');
-      alertElement.className = `custom-alert ${type}`;
-      alertElement.textContent = message;
-      document.body.appendChild(alertElement);
-
-      // Tampilkan alert
-      setTimeout(() => {
-        alertElement.style.display = 'block';
-      }, 100);
-
-      // Sembunyikan alert setelah 3 detik
-      setTimeout(() => {
-        alertElement.style.opacity = '0';
-        setTimeout(() => {
-          document.body.removeChild(alertElement);
-        }, 300);
-      }, 3000);
     }
 
     window.onload = loadData;
@@ -886,488 +847,31 @@
         padding: 8px;
       }
     }
-
-    /* Tambahkan gaya berikut untuk header dan footer */
-    .header, .footer {
-      background-color: #6b0f0f;
-      color: white;
-      padding: 1rem 0;
-    }
-    
-    .header .container, .footer .container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-    
-    .logo-title {
-      display: flex;
-      align-items: center;
-    }
-    
-    .logo {
-      width: 50px;
-      height: auto;
-      margin-right: 1rem;
-    }
-    
-    .nav-links {
-      display: flex;
-      gap: 1rem;
-    }
-    
-    .nav-links a {
-      color: white;
-      text-decoration: none;
-      transition: opacity 0.3s;
-    }
-    
-    .nav-links a:hover {
-      opacity: 0.8;
-    }
-    
-    #menu-toggle {
-      display: none;
-    }
-    
-    @media (max-width: 768px) {
-      .header .container {
-        flex-wrap: wrap;
-      }
-
-      .nav-links {
-        display: none;
-        width: 100%;
-        order: 3;
-      }
-      
-      #menu-toggle {
-        display: block;
-        order: 2;
-      }
-      
-      .nav-links.active {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-    }
-
-    .header .container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .logo-title {
-      flex-grow: 1;
-    }
-
-    #menu-toggle {
-      margin-left: auto;
-      width: 24px;
-      height: 24px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: white;
-      background: none;
-      border: none;
-      cursor: pointer;
-    }
-
-    #menu-toggle svg {
-      width: 100%;
-      height: 100%;
-      stroke: white;
-    }
-
-    .header {
-      background-color: #6b0f0f;
-      padding: 10px 20px;
-    }
-
-    .header .container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .logo-title {
-      display: flex;
-      align-items: center;
-    }
-
-    .logo {
-      width: 50px;
-      height: auto;
-      margin-right: 1rem;
-    }
-
-    h1 {
-      color: white;
-      font-size: 1.5rem;
-      margin: 0;
-    }
-
-    #menu-toggle {
-      background: none;
-      border: none;
-      cursor: pointer;
-    }
-
-    #menu-toggle svg {
-      transform: scale(1.5);
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 1rem;
-    }
-
-    .nav-links a {
-      color: white;
-      text-decoration: none;
-    }
-
-    @media (max-width: 768px) {
-      .header .container {
-        flex-wrap: wrap;
-      }
-
-      .nav-links {
-        display: none;
-        width: 100%;
-        order: 3;
-        margin-top: 1rem;
-      }
-      
-      #menu-toggle {
-        display: block;
-        order: 2;
-      }
-      
-      .nav-links.active {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-    }
-
-    /* Tambahkan gaya berikut untuk mengatur jarak antara header dan konten */
-    main {
-      padding-top: 20px; /* Atur jarak atas sesuai kebutuhan */
-    }
-
-    /* Atur ulang margin pada h1 di dalam main */
-    main h1 {
-      margin-top: 0;
-    }
-
-    /* Tambahkan gaya untuk container */
-    .container {
-      padding: 0 15px;
-    }
-
-    @media (min-width: 768px) {
-      main {
-        padding-top: 30px; /* Atur jarak atas yang lebih besar untuk layar yang lebih lebar */
-      }
-
-      .container {
-        max-width: 750px;
-        margin: 0 auto;
-      }
-    }
-
-    @media (min-width: 992px) {
-      .container {
-        max-width: 970px;
-      }
-    }
-
-    @media (min-width: 1200px) {
-      .container {
-        max-width: 1170px;
-      }
-    }
-
-    #searchInput {
-      width: 100%;
-      padding: 12px;
-      font-size: 16px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      margin-bottom: 10px;
-      box-sizing: border-box;
-    }
-
-    #searchInput:focus {
-      outline: none;
-      border-color: #7f0404;
-      box-shadow: 0 0 5px rgba(127, 4, 4, 0.5);
-    }
-
-    @media screen and (min-width: 768px) {
-      .filters {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-      }
-
-      #searchInput {
-        flex: 1 1 200px;
-        margin-bottom: 0;
-      }
-
-      #guruFilter,
-      #kelasFilter {
-        flex: 1 1 150px;
-      }
-
-      button {
-        flex: 1 1 auto;
-      }
-    }
-
-    h1 {
-      margin-bottom: 20px; /* Menambah jarak di bawah judul */
-    }
-
-    .filters {
-      margin-top: 20px; /* Menambah jarak di atas container filter */
-    }
-
-    #searchInput {
-      width: 100%;
-      padding: 12px;
-      font-size: 16px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      margin-bottom: 10px;
-      box-sizing: border-box;
-    }
-
-    #searchInput:focus {
-      outline: none;
-      border-color: #7f0404;
-      box-shadow: 0 0 5px rgba(127, 4, 4, 0.5);
-    }
-
-    @media screen and (min-width: 768px) {
-      .filters {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-      }
-
-      #searchInput {
-        flex: 1 1 200px;
-        margin-bottom: 0;
-      }
-
-      #guruFilter,
-      #kelasFilter {
-        flex: 1 1 150px;
-      }
-
-      button {
-        flex: 1 1 auto;
-      }
-    }
-
-    /* Gaya untuk alert kustom */
-    .custom-alert {
-      position: fixed;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: #f44336;
-      color: white;
-      padding: 15px 20px;
-      border-radius: 5px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-      z-index: 1000;
-      display: none;
-      font-size: 16px;
-      text-align: center;
-      max-width: 80%;
-    }
-
-    .custom-alert.success {
-      background-color: #4CAF50;
-    }
-
-    .custom-alert.info {
-      background-color: #2196F3;
-    }
-
-    @media screen and (max-width: 600px) {
-      .custom-alert {
-        font-size: 14px;
-        padding: 10px 15px;
-      }
-    }
-
-    .footer {
-      background-color: #6b0f0f;
-      color: white;
-      padding: 1rem 0;
-      text-align: center; /* Menambahkan ini untuk rata tengah */
-    }
-
-    .footer .container {
-      display: flex;
-      justify-content: center; /* Mengubah ini dari space-between menjadi center */
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
-    .footer p {
-      margin: 0; /* Menghapus margin bawaan paragraf */
-    }
-
-    /* Gaya untuk modal riwayat perpindahan */
-    .riwayat-modal {
-      position: fixed;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0,0,0,0.5);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
-
-    .riwayat-content {
-      background-color: white;
-      padding: 20px;
-      border-radius: 5px;
-      max-width: 90%;
-      max-height: 90%;
-      overflow: auto;
-    }
-
-    .riwayat-table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    .riwayat-table th,
-    .riwayat-table td {
-      padding: 10px;
-      border: 1px solid #ddd;
-      text-align: left;
-    }
-
-    .riwayat-table th {
-      background-color: #7f0404;
-      color: white;
-    }
-
-    .riwayat-buttons {
-      margin-top: 20px;
-      text-align: center;
-    }
-
-    .riwayat-buttons button {
-      margin: 0 10px;
-    }
-
-    @media screen and (max-width: 768px) {
-      .riwayat-table {
-        font-size: 14px;
-      }
-
-      .riwayat-table th,
-      .riwayat-table td {
-        padding: 5px;
-      }
-
-      .riwayat-content {
-        padding: 10px;
-      }
-
-      .riwayat-buttons button {
-        margin: 5px;
-        width: calc(50% - 10px);
-      }
-    }
   </style>
 </head>
-<body class="d-flex flex-column min-vh-100">
-  <header class="header">
-    <div class="container">
-      <div class="logo-title">
-        <img src="img/logo.jpg" alt="Logo Rumah Tahfidz Saijaan" class="logo">
-        <h1>Rumah Tahfidz Saijaan</h1>
-      </div>
-      <button id="menu-toggle" aria-label="Toggle menu">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="3" y1="12" x2="21" y2="12"></line>
-          <line x1="3" y1="6" x2="21" y2="6"></line>
-          <line x1="3" y1="18" x2="21" y2="18"></line>
-        </svg>
-      </button>
-      <nav class="nav-links" id="nav-links">
-        <a href="index.html">Beranda</a>
-        <a href="naik.html">Kenaikan Kelas</a>
-        <a href="tambah.html">Tambah Santri</a>
-      </nav>
-    </div>
-  </header>
-
-  <main class="flex-grow-1">
-    <div class="container">
-      <h1 style="color: black;">PERPINDAHAN KELAS SANTRI</h1>
-      <div class="filters">
-        <input type="text" id="searchInput" placeholder="Cari Nama Santri" oninput="filterByName()">
-        <select id="guruFilter" onchange="updateKelasDropdown(); filterData();">
-          <option value="">Semua Guru</option>
-        </select>
-        <select id="kelasFilter" onchange="filterData()" disabled>
-          <option value="">Semua Kelas</option>
-        </select>
-        <button onclick="viewRiwayatPerpindahan()">Lihat Riwayat Perpindahan</button>
-      </div>
-      <table>
-        <thead>
-          <tr>
-            <th>No.</th>
-            <th>Nama</th>
-            <th>No. Infaq</th>
-            <th>Aksi</th>
-          </tr>
-        </thead>
-        <tbody id="santriTableBody">
-        </tbody>
-      </table>
-    </div>
-  </main>
-
-  <footer class="footer">
-    <div class="container">
-      <p>&copy; 2024 Rumah Tahfidz Saijaan. Hak Cipta Dilindungi.</p>
-    </div>
-  </footer>
-
-  <script>
-    // ... (script yang sudah ada) ...
-
-    // Perbaikan script untuk menu toggle
-    document.addEventListener('DOMContentLoaded', function() {
-      const menuToggle = document.getElementById('menu-toggle');
-      const navLinks = document.getElementById('nav-links');
-
-      menuToggle.addEventListener('click', function() {
-        navLinks.classList.toggle('active');
-      });
-    });
-  </script>
+<body>
+  <h1>PERPINDAHAN KELAS SANTRI</h1>
+  <div class="filters">
+    <input type="text" id="searchInput" placeholder="Cari Nama Santri" oninput="filterByName()">
+    <select id="guruFilter" onchange="updateKelasDropdown(); filterData();">
+      <option value="">Semua Guru</option>
+    </select>
+    <select id="kelasFilter" onchange="filterData()" disabled>
+      <option value="">Semua Kelas</option>
+    </select>
+    <button onclick="viewRiwayatPerpindahan()">Lihat Riwayat Perpindahan</button>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>No.</th>
+        <th>Nama</th>
+        <th>No. Infaq</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody id="santriTableBody">
+    </tbody>
+  </table>
 </body>
 </html>
